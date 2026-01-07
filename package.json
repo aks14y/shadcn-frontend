@@ -1,0 +1,20 @@
+{
+  "name": "module-federation-react",
+  "version": "1.0.0",
+  "description": "React project with Module Federation - k11-war (host) and k11-inbox (remote)",
+  "private": true,
+  "workspaces": [
+    "k11-war",
+    "k11-inbox"
+  ],
+  "scripts": {
+    "start:war": "cd k11-war && pnpm start",
+    "start:inbox": "cd k11-inbox && pnpm start",
+    "build:war": "cd k11-war && pnpm run build",
+    "build:inbox": "cd k11-inbox && pnpm run build",
+    "install:all": "pnpm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
