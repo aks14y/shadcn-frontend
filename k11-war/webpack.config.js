@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
+const Dotenv = require("dotenv-webpack");
 
 module.exports = {
   mode: "development",
@@ -45,6 +46,12 @@ module.exports = {
     ],
   },
   plugins: [
+    new Dotenv({
+      path: "./.env",
+      safe: false,
+      systemvars: true,
+      defaults: false,
+    }),
     new ModuleFederationPlugin({
       name: "k11_war",
       filename: "remoteEntry.js",
@@ -53,9 +60,7 @@ module.exports = {
       },
       exposes: {
         "./DesignSystem": "./src/design-system/index",
-        "./ThemeProvider": "./src/design-system/ThemeProvider",
-        "./Button": "./src/design-system/components/Button",
-        "./Card": "./src/design-system/components/Card",
+        "./Api": "./src/api/index",
       },
       shared: {
         react: {
@@ -87,6 +92,10 @@ module.exports = {
         "styled-components": {
           singleton: true,
           requiredVersion: "^6.2.0",
+        },
+        "@tanstack/react-query": {
+          singleton: true,
+          requiredVersion: "^5.90.0",
         },
       },
     }),
