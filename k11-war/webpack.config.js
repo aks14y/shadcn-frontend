@@ -61,6 +61,7 @@ module.exports = {
       exposes: {
         "./DesignSystem": "./src/design-system/index",
         "./Api": "./src/api/index",
+        "./SharedContext": "./src/contexts/SharedContext",
       },
       shared: {
         react: {

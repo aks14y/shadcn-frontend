@@ -1,7 +1,8 @@
-import React, { useState, Suspense, useMemo } from "react";
+import React, { useState, Suspense, useMemo, useEffect } from "react";
 import { Container, Typography, Box, Grid, CircularProgress, Alert } from "@mui/material";
 import ThemeProvider from "./design-system/ThemeProvider";
 import QueryProvider from "./api/QueryProvider";
+import { SharedContextProvider, useSharedContext } from "./contexts/SharedContext";
 import Button from "./design-system/components/Button";
 import Card from "./design-system/components/Card";
 import Navbar from "./components/Navbar";
@@ -36,9 +37,14 @@ const InboxErrorFallback = ({ error }) => (
   </Box>
 );
 
-function App() {
+const AppContent = () => {
   const [currentView, setCurrentView] = useState("home");
   const [inboxError, setInboxError] = useState(null);
+  const { updateSharedData } = useSharedContext();
+
+  useEffect(() => {
+    updateSharedData({ navigation: { currentView } });
+  }, [currentView, updateSharedData]);
 
   // Only load the remote module when inbox view is selected
   const InboxAppComponent = useMemo(() => {
@@ -103,36 +109,44 @@ function App() {
   );
 
   return (
+    <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <Navbar currentView={currentView} onViewChange={setCurrentView} />
+      
+      <Box sx={{ flex: 1 }}>
+        {currentView === "home" ? (
+          <HomeView />
+        ) : InboxAppComponent ? (
+          <Suspense
+            fallback={
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  minHeight: "calc(100vh - 64px)",
+                }}
+              >
+                <CircularProgress />
+              </Box>
+            }
+          >
+            <InboxAppComponent />
+          </Suspense>
+        ) : (
+          <InboxErrorFallback />
+        )}
+      </Box>
+    </Box>
+  );
+};
+
+function App() {
+  return (
     <ThemeProvider>
       <QueryProvider>
-        <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-          <Navbar currentView={currentView} onViewChange={setCurrentView} />
-          
-          <Box sx={{ flex: 1 }}>
-            {currentView === "home" ? (
-              <HomeView />
-            ) : InboxAppComponent ? (
-              <Suspense
-                fallback={
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      minHeight: "calc(100vh - 64px)",
-                    }}
-                  >
-                    <CircularProgress />
-                  </Box>
-                }
-              >
-                <InboxAppComponent />
-              </Suspense>
-            ) : (
-              <InboxErrorFallback />
-            )}
-          </Box>
-        </Box>
+        <SharedContextProvider>
+          <AppContent />
+        </SharedContextProvider>
       </QueryProvider>
     </ThemeProvider>
   );

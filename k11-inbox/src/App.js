@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Container, Typography, Box, Grid } from "@mui/material";
-import { ThemeProvider, Button, Card } from "k11_war/DesignSystem";
+import { ThemeProvider, Button, Card, useSharedContext } from "k11_war/DesignSystem";
 
 function App() {
+  const { navigation, config, user, updateSharedData } = useSharedContext();
+
+  useEffect(() => {
+    console.log("Shared context from k11-war:", { navigation, config, user });
+  }, [navigation, config, user]);
+
   return (
     <ThemeProvider>
       <Box
@@ -24,6 +30,16 @@ function App() {
             <Typography variant="body1" sx={{ mt: 2, opacity: 0.9 }}>
               This application consumes the design-system from k11-war via Module Federation
             </Typography>
+            {config && (
+              <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
+                Connected to: {config.appName} v{config.version}
+              </Typography>
+            )}
+            {navigation?.currentView && (
+              <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
+                Current View: {navigation.currentView}
+              </Typography>
+            )}
           </Box>
 
           <Grid container spacing={3}>
