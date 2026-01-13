@@ -1,23 +1,6 @@
 import React from "react";
-import styled from "styled-components";
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  Box,
-  Container,
-} from "@mui/material";
-import { shadow, fontWeight, fontSize, borderWidth, opacity } from "../design-system/utils/themeHelpers";
-
-/**
- * Navbar component combining styled-components, MUI, and sx props
- * with CSP-safe nonce support
- */
-const StyledAppBar = styled(AppBar)`
-  background: ${(props) => props.theme.palette.primary.main};
-  box-shadow: ${(props) => shadow('sm')(props.theme)};
-`;
+import { Button } from "../design-system/components/Button";
+import { cn } from "../design-system/utils/utils";
 
 const Navbar = ({ currentView, onViewChange }) => {
   const handleNavClick = (view) => {
@@ -27,72 +10,45 @@ const Navbar = ({ currentView, onViewChange }) => {
   };
 
   return (
-    <StyledAppBar position="static">
-      <Container maxWidth="lg">
-        <Toolbar
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            py: 1,
-          }}
-        >
-          <Typography
-            variant="h6"
-            component="div"
-            sx={(theme) => ({
-              fontWeight: fontWeight('bold')(theme),
-              cursor: "pointer",
-              "&:hover": {
-                opacity: opacity('hover')(theme),
-              },
-            })}
+    <nav className="bg-primary text-primary-foreground shadow-sm sticky top-0 z-50">
+      <div className="container mx-auto max-w-7xl px-4">
+        <div className="flex justify-between items-center py-4">
+          <h1
+            className="text-xl font-bold cursor-pointer hover:opacity-90 transition-opacity"
             onClick={() => handleNavClick("home")}
           >
             K11 WAR
-          </Typography>
+          </h1>
 
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <div className="flex gap-2">
             <Button
-              color="inherit"
+              variant="ghost"
               onClick={() => handleNavClick("home")}
-              sx={(theme) => ({
-                fontWeight: fontWeight(currentView === "home" ? 'bold' : 'normal')(theme),
-                textTransform: "none",
-                fontSize: fontSize('base')(theme),
-                borderBottom: currentView === "home"
-                  ? `${borderWidth('medium')(theme)} solid white`
-                  : `${borderWidth('medium')(theme)} solid transparent`,
-                borderRadius: 0,
-                "&:hover": {
-                  backgroundColor: `rgba(255, 255, 255, ${opacity('overlay')(theme)})`,
-                },
-              })}
+              className={cn(
+                "text-white hover:bg-white/10 rounded-none",
+                currentView === "home"
+                  ? "font-bold border-b-2 border-white"
+                  : "font-normal border-b-2 border-transparent"
+              )}
             >
               Home
             </Button>
             <Button
-              color="inherit"
+              variant="ghost"
               onClick={() => handleNavClick("inbox")}
-              sx={(theme) => ({
-                fontWeight: fontWeight(currentView === "inbox" ? 'bold' : 'normal')(theme),
-                textTransform: "none",
-                fontSize: fontSize('base')(theme),
-                borderBottom: currentView === "inbox"
-                  ? `${borderWidth('medium')(theme)} solid white`
-                  : `${borderWidth('medium')(theme)} solid transparent`,
-                borderRadius: 0,
-                "&:hover": {
-                  backgroundColor: `rgba(255, 255, 255, ${opacity('overlay')(theme)})`,
-                },
-              })}
+              className={cn(
+                "text-white hover:bg-white/10 rounded-none",
+                currentView === "inbox"
+                  ? "font-bold border-b-2 border-white"
+                  : "font-normal border-b-2 border-transparent"
+              )}
             >
               Inbox
             </Button>
-          </Box>
-        </Toolbar>
-      </Container>
-    </StyledAppBar>
+          </div>
+        </div>
+      </div>
+    </nav>
   );
 };
 

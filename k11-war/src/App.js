@@ -1,40 +1,35 @@
 import React, { useState, Suspense, useMemo, useEffect } from "react";
-import { Container, Typography, Box, Grid, CircularProgress, Alert } from "@mui/material";
-import ThemeProvider from "./design-system/ThemeProvider";
 import QueryProvider from "./api/QueryProvider";
 import { SharedContextProvider, useSharedContext } from "./contexts/SharedContext";
-import Button from "./design-system/components/Button";
-import Card from "./design-system/components/Card";
+import { Button } from "./design-system/components/Button";
+import { Card } from "./design-system/components/Card";
 import Navbar from "./components/Navbar";
+import { Alert } from "./design-system/components/Alert";
 
 // Error fallback component
 const InboxErrorFallback = ({ error }) => (
-  <Box
-    sx={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      minHeight: "calc(100vh - 64px)",
-      padding: 4,
-    }}
-  >
-    <Alert severity="error" sx={{ maxWidth: 600 }}>
-      <Typography variant="h6" gutterBottom>
-        Failed to load Inbox module
-      </Typography>
-      <Typography variant="body2">
-        Please ensure k11-inbox is running on http://localhost:3001
-      </Typography>
-      <Typography variant="body2" sx={{ mt: 1 }}>
-        Start it with: <code>pnpm run start:inbox</code>
-      </Typography>
-      {error && (
-        <Typography variant="body2" sx={{ mt: 1, fontFamily: "monospace", fontSize: "0.75rem" }}>
-          Error: {error.message}
-        </Typography>
-      )}
-    </Alert>
-  </Box>
+  <div className="flex justify-center items-center min-h-[calc(100vh-64px)] p-4">
+    <Alert 
+      variant="destructive" 
+      className="max-w-[600px]"
+      title="Failed to load Inbox module"
+      description={
+        <>
+          <p className="mb-2">
+            Please ensure k11-inbox is running on http://localhost:3001
+          </p>
+          <p className="mb-2">
+            Start it with: <code className="bg-muted px-1 py-0.5 rounded">pnpm run start:inbox</code>
+          </p>
+          {error && (
+            <p className="mt-2 font-mono text-xs">
+              Error: {error.message}
+            </p>
+          )}
+        </>
+      }
+    />
+  </div>
 );
 
 const AppContent = () => {
@@ -63,71 +58,54 @@ const AppContent = () => {
   }, [currentView]);
 
   const HomeView = () => (
-    <Box
-      sx={{
-        minHeight: "calc(100vh - 64px)",
-        background: (theme) => theme.palette.background.default,
-        padding: 4,
-      }}
-    >
-      <Container maxWidth="lg">
-        <Box sx={{ textAlign: "center", mb: 4 }}>
-          <Typography variant="h1" gutterBottom>
+    <div className="min-h-[calc(100vh-64px)] bg-background p-4">
+      <div className="container mx-auto max-w-7xl">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-semibold mb-4">
             K11 WAR
-          </Typography>
-          <Typography variant="h5">
+          </h1>
+          <h2 className="text-2xl font-medium mb-4">
             Main Application with Design System
-          </Typography>
-          <Typography variant="body1" sx={{ mt: 2, opacity: 0.9 }}>
+          </h2>
+          <p className="mt-4 opacity-90">
             This application hosts the design-system and exposes it via Module Federation
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <Card
-              title="Design System Button"
-              content="This button component is part of the design-system exposed to k11-inbox"
-            >
-              <Box sx={{ mt: 2, display: "flex", gap: 2, flexWrap: "wrap" }}>
-                <Button variant="contained">Contained</Button>
-                <Button variant="outlined">Outlined</Button>
-                <Button variant="text">Text</Button>
-              </Box>
-            </Card>
-          </Grid>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card
+            title="Design System Button"
+            description="This button component is part of the design-system exposed to k11-inbox"
+          >
+            <div className="mt-4 flex gap-2 flex-wrap">
+              <Button variant="default">Default</Button>
+              <Button variant="outline">Outline</Button>
+              <Button variant="ghost">Ghost</Button>
+            </div>
+          </Card>
 
-          <Grid item xs={12} md={6}>
-            <Card
-              title="Design System Card"
-              content="This card component uses Material UI and is part of the shared design-system. It can be consumed by k11-inbox and other remote applications."
-            />
-          </Grid>
-        </Grid>
-      </Container>
-    </Box>
+          <Card
+            title="Design System Card"
+            description="This card component uses shadcn/ui and is part of the shared design-system. It can be consumed by k11-inbox and other remote applications."
+          />
+        </div>
+      </div>
+    </div>
   );
 
   return (
-    <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <div className="min-h-screen flex flex-col">
       <Navbar currentView={currentView} onViewChange={setCurrentView} />
       
-      <Box sx={{ flex: 1 }}>
+      <div className="flex-1">
         {currentView === "home" ? (
           <HomeView />
         ) : InboxAppComponent ? (
           <Suspense
             fallback={
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  minHeight: "calc(100vh - 64px)",
-                }}
-              >
-                <CircularProgress />
-              </Box>
+              <div className="flex justify-center items-center min-h-[calc(100vh-64px)]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              </div>
             }
           >
             <InboxAppComponent />
@@ -135,20 +113,18 @@ const AppContent = () => {
         ) : (
           <InboxErrorFallback />
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
 function App() {
   return (
-    <ThemeProvider>
-      <QueryProvider>
-        <SharedContextProvider>
-          <AppContent />
-        </SharedContextProvider>
-      </QueryProvider>
-    </ThemeProvider>
+    <QueryProvider>
+      <SharedContextProvider>
+        <AppContent />
+      </SharedContextProvider>
+    </QueryProvider>
   );
 }
 

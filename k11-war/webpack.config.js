@@ -7,6 +7,8 @@ module.exports = {
   devServer: {
     port: 3000,
     historyApiFallback: true,
+    hot: true,
+    liveReload: false,
     headers: {
       "Content-Security-Policy": [
         "default-src 'self'",
@@ -18,6 +20,9 @@ module.exports = {
         "frame-ancestors 'none'",
       ].join("; "),
     },
+  },
+  optimization: {
+    moduleIds: "named",
   },
   resolve: {
     extensions: [".jsx", ".js", ".json"],
@@ -41,7 +46,23 @@ module.exports = {
       },
       {
         test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
+        use: [
+          {
+            loader: "style-loader",
+            options: {
+              injectType: "styleTag",
+            },
+          },
+          {
+            loader: "css-loader",
+            options: {
+              importLoaders: 1,
+            },
+          },
+          {
+            loader: "postcss-loader",
+          },
+        ],
       },
     ],
   },
@@ -60,6 +81,7 @@ module.exports = {
       },
       exposes: {
         "./DesignSystem": "./src/design-system/index",
+        "./ThemeCSS": "./src/index.css",
         "./Api": "./src/api/index",
         "./SharedContext": "./src/contexts/SharedContext",
       },
@@ -73,26 +95,6 @@ module.exports = {
           singleton: true,
           requiredVersion: "^18.2.0",
           eager: false,
-        },
-        "@mui/material": {
-          singleton: true,
-          requiredVersion: "^5.14.20",
-        },
-        "@emotion/react": {
-          singleton: true,
-          requiredVersion: "^11.11.1",
-        },
-        "@emotion/styled": {
-          singleton: true,
-          requiredVersion: "^11.11.0",
-        },
-        "@emotion/cache": {
-          singleton: true,
-          requiredVersion: "^11.11.0",
-        },
-        "styled-components": {
-          singleton: true,
-          requiredVersion: "^6.2.0",
         },
         "@tanstack/react-query": {
           singleton: true,
