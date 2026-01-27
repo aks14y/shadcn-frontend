@@ -1,112 +1,55 @@
 import * as React from "react"
+import * as DialogPrimitive from "@radix-ui/react-dialog"
+import { X } from "lucide-react"
 import { cn } from "../utils/utils"
-import { Button } from "./Button"
 
-const DrawerContext = React.createContext({
-  open: false,
-  onOpenChange: () => {},
-})
+const Drawer = DialogPrimitive.Root
 
-const Drawer = ({ open, onOpenChange, children, ...props }) => {
-  const [isOpen, setIsOpen] = React.useState(open || false)
+const DrawerTrigger = DialogPrimitive.Trigger
 
-  React.useEffect(() => {
-    setIsOpen(open)
-  }, [open])
+const DrawerPortal = DialogPrimitive.Portal
 
-  const handleOpenChange = (newOpen) => {
-    setIsOpen(newOpen)
-    onOpenChange?.(newOpen)
-  }
+const DrawerClose = DialogPrimitive.Close
 
-  React.useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden"
-    } else {
-      document.body.style.overflow = ""
-    }
-    return () => {
-      document.body.style.overflow = ""
-    }
-  }, [isOpen])
-
-  return (
-    <DrawerContext.Provider value={{ open: isOpen, onOpenChange: handleOpenChange }}>
-      {children}
-    </DrawerContext.Provider>
-  )
-}
-
-const DrawerTrigger = React.forwardRef(({ className, children, asChild, ...props }, ref) => {
-  const { onOpenChange } = React.useContext(DrawerContext)
-  
-  if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children, {
-      onClick: () => onOpenChange(true),
-      ...props,
-    })
-  }
-  
-  return (
-    <Button ref={ref} onClick={() => onOpenChange(true)} className={className} {...props}>
-      {children}
-    </Button>
-  )
-})
-DrawerTrigger.displayName = "DrawerTrigger"
+const DrawerOverlay = React.forwardRef(({ className, ...props }, ref) => (
+  <DialogPrimitive.Overlay
+    ref={ref}
+    className={cn(
+      "fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      className
+    )}
+    {...props}
+  />
+))
+DrawerOverlay.displayName = "DrawerOverlay"
 
 const DrawerContent = React.forwardRef(({ className, children, side = "right", ...props }, ref) => {
-  const { open, onOpenChange } = React.useContext(DrawerContext)
-
-  React.useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape") {
-        onOpenChange(false)
-      }
-    }
-    if (open) {
-      document.addEventListener("keydown", handleEscape)
-    }
-    return () => {
-      document.removeEventListener("keydown", handleEscape)
-    }
-  }, [open, onOpenChange])
-
-  if (!open) return null
-
   const sideClasses = {
-    right: "right-0 top-0 h-full w-[400px] border-l",
-    left: "left-0 top-0 h-full w-[400px] border-r",
-    top: "top-0 left-0 w-full h-[400px] border-b",
-    bottom: "bottom-0 left-0 w-full h-[400px] border-t",
-  }
-
-  const animationClasses = {
-    right: "animate-in slide-in-from-right",
-    left: "animate-in slide-in-from-left",
-    top: "animate-in slide-in-from-top",
-    bottom: "animate-in slide-in-from-bottom",
+    right: "inset-y-0 right-0 h-full w-[400px] border-l data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
+    left: "inset-y-0 left-0 h-full w-[400px] border-r data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left",
+    top: "inset-x-0 top-0 w-full h-[400px] border-b data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
+    bottom: "inset-x-0 bottom-0 w-full h-[400px] border-t data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
   }
 
   return (
-    <>
-      <div
-        className="fixed inset-0 bg-black/50 z-40"
-        onClick={() => onOpenChange(false)}
-      />
-      <div
+    <DrawerPortal>
+      <DrawerOverlay />
+      <DialogPrimitive.Content
         ref={ref}
         className={cn(
           "fixed z-50 bg-background shadow-lg",
           sideClasses[side],
-          animationClasses[side],
           className
         )}
         {...props}
       >
         {children}
-      </div>
-    </>
+        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </DialogPrimitive.Close>
+      </DialogPrimitive.Content>
+    </DrawerPortal>
   )
 })
 DrawerContent.displayName = "DrawerContent"
@@ -116,52 +59,41 @@ const DrawerHeader = ({ className, ...props }) => (
 )
 DrawerHeader.displayName = "DrawerHeader"
 
+const DrawerFooter = ({ className, ...props }) => (
+  <div
+    className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 p-6", className)}
+    {...props}
+  />
+)
+DrawerFooter.displayName = "DrawerFooter"
+
 const DrawerTitle = React.forwardRef(({ className, ...props }, ref) => (
-  <h2
+  <DialogPrimitive.Title
     ref={ref}
     className={cn("text-lg font-semibold leading-none tracking-tight", className)}
     {...props}
   />
 ))
-DrawerTitle.displayName = "DrawerTitle"
+DrawerTitle.displayName = DialogPrimitive.Title.displayName
 
 const DrawerDescription = React.forwardRef(({ className, ...props }, ref) => (
-  <p
+  <DialogPrimitive.Description
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
 ))
-DrawerDescription.displayName = "DrawerDescription"
-
-const DrawerFooter = ({ className, ...props }) => (
-  <div className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 p-6", className)} {...props} />
-)
-DrawerFooter.displayName = "DrawerFooter"
-
-const DrawerClose = React.forwardRef(({ className, children, ...props }, ref) => {
-  const { onOpenChange } = React.useContext(DrawerContext)
-  return (
-    <Button
-      ref={ref}
-      variant="ghost"
-      onClick={() => onOpenChange(false)}
-      className={cn("absolute right-4 top-4", className)}
-      {...props}
-    >
-      {children || "×"}
-    </Button>
-  )
-})
-DrawerClose.displayName = "DrawerClose"
+DrawerDescription.displayName = DialogPrimitive.Description.displayName
 
 export {
   Drawer,
+  DrawerPortal,
+  DrawerOverlay,
   DrawerTrigger,
+  DrawerClose,
   DrawerContent,
   DrawerHeader,
+  DrawerFooter,
   DrawerTitle,
   DrawerDescription,
-  DrawerFooter,
-  DrawerClose,
 }

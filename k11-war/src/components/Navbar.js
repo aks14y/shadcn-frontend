@@ -33,18 +33,6 @@ const Navbar = ({ currentView, onViewChange }) => {
             >
               Home
             </Button>
-            <Button
-              variant="ghost"
-              onClick={() => handleNavClick("inbox")}
-              className={cn(
-                "text-white hover:bg-white/10 rounded-none",
-                currentView === "inbox"
-                  ? "font-bold border-b-2 border-white"
-                  : "font-normal border-b-2 border-transparent"
-              )}
-            >
-              Inbox
-            </Button>
           </div>
         </div>
       </div>

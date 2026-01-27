@@ -1,0 +1,32 @@
+[build]
+publish = "dist"
+command = "pnpm run build"
+
+[[headers]]
+for = "/*"
+[headers.values]
+Content-Security-Policy = """
+  default-src 'self';
+  script-src 'self' 'nonce-dev-nonce-1234567890abcdef';
+  style-src 'self' 'nonce-dev-nonce-1234567890abcdef' https://fonts.googleapis.com;
+  font-src 'self' https://fonts.gstatic.com data:;
+  img-src 'self' data: https:;
+  connect-src 'self' https://unrivaled-cendol-791a6d.netlify.app;
+  frame-ancestors 'none';
+  form-action 'self';
+  base-uri 'self';
+  object-src 'none';
+"""
+X-CSP-Debug = "enabled"
+
+# Headers for JavaScript files
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Content-Type = "application/javascript; charset=utf-8"
+
+# Headers for CSS files
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Content-Type = "text/css; charset=utf-8"

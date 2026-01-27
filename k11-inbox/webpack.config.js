@@ -58,12 +58,12 @@ module.exports = {
         react: {
           singleton: true,
           requiredVersion: "^18.2.0",
-          eager: false,
+          eager: true,
         },
         "react-dom": {
           singleton: true,
           requiredVersion: "^18.2.0",
-          eager: false,
+          eager: true,
         },
         "@mui/material": {
           singleton: true,

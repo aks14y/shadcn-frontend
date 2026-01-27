@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- CSP Nonce - In production, generate this server-side and pass to ThemeProvider -->
-    <meta name="csp-nonce" content="">
+    <meta name="csp-nonce" content="<%= cspNonce %>">
+    <script nonce="<%= cspNonce %>">
+      window.__CSP_NONCE__ = '<%= cspNonce %>';
+    </script>
     <title>K11 WAR - Main Application</title>
 </head>
 <body>

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import { Container, Typography, Box, Grid } from "@mui/material";
-import { ThemeProvider, Button, Card, useSharedContext } from "k11_war/DesignSystem";
+import "k11_war/ThemeCSS";
+import { Button, Card } from "k11_war/DesignSystem";
+import { useSharedContext } from "k11_war/SharedContext";
 
 function App() {
   const { navigation, config, user, updateSharedData } = useSharedContext();
@@ -10,77 +11,63 @@ function App() {
   }, [navigation, config, user]);
 
   return (
-    <ThemeProvider>
-      <Box
-        sx={{
-          minHeight: "100vh",
-          background: (theme) =>
-            `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.primary.main} 100%)`,
-          padding: 4,
-        }}
-      >
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: "center", color: "white", mb: 4 }}>
-            <Typography variant="h1" gutterBottom>
+    <div className="min-h-screen bg-gradient-to-br from-secondary to-primary p-4">
+      <div className="container mx-auto max-w-7xl">
+        <div className="text-center text-white mb-8">
+          <h1 className="text-4xl font-bold mb-4">
               K11 Inbox
-            </Typography>
-            <Typography variant="h5">
+          </h1>
+          <h2 className="text-2xl font-medium mb-4">
               Remote Application Consuming Design System
-            </Typography>
-            <Typography variant="body1" sx={{ mt: 2, opacity: 0.9 }}>
+          </h2>
+          <p className="mt-2 opacity-90">
               This application consumes the design-system from k11-war via Module Federation
-            </Typography>
+          </p>
             {config && (
-              <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
+            <p className="mt-1 text-sm opacity-80">
                 Connected to: {config.appName} v{config.version}
-              </Typography>
+            </p>
             )}
             {navigation?.currentView && (
-              <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
+            <p className="mt-1 text-sm opacity-80">
                 Current View: {navigation.currentView}
-              </Typography>
+            </p>
             )}
-          </Box>
+        </div>
 
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card
                 title="Consumed Button Component"
-                content="This button is loaded from k11-war's design-system. It uses the same theme and styling!"
+            description="This button is loaded from k11-war's design-system. It uses the same theme and styling!"
               >
-                <Box sx={{ mt: 2, display: "flex", gap: 2, flexWrap: "wrap" }}>
-                  <Button variant="contained" onClick={() => alert("Button clicked!")}>
+            <div className="mt-4 flex gap-2 flex-wrap">
+              <Button variant="default" onClick={() => alert("Button clicked!")}>
                     Click Me
                   </Button>
-                  <Button variant="outlined">Outlined</Button>
-                  <Button gradient>Gradient Style</Button>
-                </Box>
+              <Button variant="outline">Outlined</Button>
+              <Button variant="secondary">Secondary</Button>
+            </div>
               </Card>
-            </Grid>
 
-            <Grid item xs={12} md={6}>
               <Card
                 title="Consumed Card Component"
-                content="This card component is also from k11-war's design-system. Notice how it maintains the same design language and theme consistency across both applications!"
+            description="This card component is also from k11-war's design-system. Notice how it maintains the same design language and theme consistency across both applications!"
               />
-            </Grid>
 
-            <Grid item xs={12}>
               <Card
                 title="Uniform Design System"
-                content="Both k11-war and k11-inbox use the same design-system components, ensuring visual consistency across all applications. The theme, colors, typography, and component styles are all shared."
-              >
-                <Box sx={{ mt: 2, display: "flex", gap: 2, flexWrap: "wrap" }}>
-                  <Button variant="contained" size="small">Small</Button>
-                  <Button variant="contained" size="medium">Medium</Button>
-                  <Button variant="contained" size="large">Large</Button>
-                </Box>
+            description="Both k11-war and k11-inbox use the same design-system components, ensuring visual consistency across all applications. The theme, colors, typography, and component styles are all shared."
+            className="md:col-span-2"
+          >
+            <div className="mt-4 flex gap-2 flex-wrap">
+              <Button size="sm">Small</Button>
+              <Button size="default">Default</Button>
+              <Button size="lg">Large</Button>
+            </div>
               </Card>
-            </Grid>
-          </Grid>
-        </Container>
-      </Box>
-    </ThemeProvider>
+        </div>
+      </div>
+    </div>
   );
 }
 

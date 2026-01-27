@@ -2,6 +2,9 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
 const Dotenv = require("dotenv-webpack");
 
+// Fixed nonce for development server
+const CSP_NONCE = "dev-nonce-1234567890abcdef";
+
 module.exports = {
   mode: "development",
   devServer: {
@@ -12,8 +15,8 @@ module.exports = {
     headers: {
       "Content-Security-Policy": [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:*", // 'unsafe-eval' needed for webpack dev server
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Allow inline styles with nonce
+        `script-src 'self' 'unsafe-eval' 'nonce-${CSP_NONCE}' http://localhost:3001`, // 'unsafe-eval' needed for webpack dev server, localhost:3001 for Module Federation
+        `style-src 'self' 'nonce-${CSP_NONCE}' https://fonts.googleapis.com`, // Nonce for style tags
         "font-src 'self' https://fonts.gstatic.com data:",
         "img-src 'self' data: https:",
         "connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:*",
@@ -51,6 +54,9 @@ module.exports = {
             loader: "style-loader",
             options: {
               injectType: "styleTag",
+              attributes: {
+                nonce: CSP_NONCE,
+              },
             },
           },
           {
@@ -77,7 +83,6 @@ module.exports = {
       name: "k11_war",
       filename: "remoteEntry.js",
       remotes: {
-        k11_inbox: "k11_inbox@http://localhost:3001/remoteEntry.js",
       },
       exposes: {
         "./DesignSystem": "./src/design-system/index",
@@ -89,12 +94,12 @@ module.exports = {
         react: {
           singleton: true,
           requiredVersion: "^18.2.0",
-          eager: false,
+          eager: true,
         },
         "react-dom": {
           singleton: true,
           requiredVersion: "^18.2.0",
-          eager: false,
+          eager: true,
         },
         "@tanstack/react-query": {
           singleton: true,
@@ -104,6 +109,9 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: "./public/index.html",
+      templateParameters: {
+        cspNonce: CSP_NONCE,
+      },
     }),
   ],
 };
