@@ -586,7 +586,7 @@ const InsightsDashboard = () => {
         {/* Charts Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <ChartCard
-            title="DT Spare capacity"
+            title="DT Spare Capacity"
             timeRangeButtons={[
               { label: "Last 24 Hours", value: "day" },
               { label: "Last Week", value: "week" },

@@ -41,7 +41,8 @@ const ChartCard = ({ title, timeRangeButtons = [], legend = [], children, classN
                     "px-4 py-1.5 text-xs font-medium transition-colors first:rounded-l-full last:rounded-r-full whitespace-nowrap h-full",
                     selectedTimeRange === button.value
                       ? "bg-[#155eef] text-white"
-                      : "text-[#155eef] hover:bg-blue-50"
+                      : "text-[#155eef] hover:bg-blue-50",
+                    index > 0 && "border-l border-[#155eef]"
                   )}
                 >
                   {button.label}
