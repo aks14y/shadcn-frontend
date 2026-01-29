@@ -24,24 +24,33 @@ const ChartCard = ({ title, timeRangeButtons = [], legend = [], children, classN
 
   return (
     <Card className={cn("w-full", className)}>
-      <div className="p-8">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
-          <div className="flex items-center gap-3">
-            {timeRangeButtons.map((button) => (
-              <button
-                key={button.value}
-                onClick={() => setSelectedTimeRange(button.value)}
-                className={cn(
-                  "px-4 py-2 text-sm font-medium rounded-full transition-colors",
-                  selectedTimeRange === button.value
-                    ? "bg-[#155eef] text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                )}
-              >
-                {button.label}
-              </button>
-            ))}
+      <div className="p-[16px]">
+        <div className="flex items-start justify-between mb-6">
+         <div>
+           <h3 className="text-l font-bold text-lg">{title}</h3>
+         </div>
+          
+          {/*  */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="inline-flex rounded-full border border-[#155eef] bg-white h-[32px]">
+              {timeRangeButtons.map((button, index) => (
+                <button
+                  key={button.value}
+                  onClick={() => setSelectedTimeRange(button.value)}
+                  className={cn(
+                    "px-4 py-1.5 text-xs font-medium transition-colors first:rounded-l-full last:rounded-r-full whitespace-nowrap h-full",
+                    selectedTimeRange === button.value
+                      ? "bg-[#155eef] text-white"
+                      : "text-[#155eef] hover:bg-blue-50"
+                  )}
+                >
+                  {button.label}
+                </button>
+              ))}
+            </div>
+
+            {/*  */}
+          
             {onExpand && (
               <button
                 onClick={onExpand}
@@ -62,8 +71,12 @@ const ChartCard = ({ title, timeRangeButtons = [], legend = [], children, classN
               </button>
             )}
           </div>
+           
         </div>
-        
+        <div className="text-sm text-gray-600">
+          {title === "DT Spare Capacity" ? "kW/kVA" : title === "Voltage" ? "Volts" : null}
+        </div>
+
         {/* Chart Area */}
         <div className="w-full h-80 bg-white border border-gray-200 rounded-lg p-6 flex flex-col">
           {children || (series && series.length > 0 ? (

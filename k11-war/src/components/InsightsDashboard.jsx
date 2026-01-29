@@ -11,14 +11,14 @@ const TimeRangeTabs = ({ options }) => {
   const [active, setActive] = React.useState(options[0]?.value || "");
 
   return (
-    <div className="inline-flex rounded-full bg-[#f5f5ff] p-1 text-sm font-medium">
+    <div className="inline-flex rounded-lg border border-[#155eef] bg-white gap-0">
       {options.map((opt) => (
         <button
           key={opt.value}
           onClick={() => setActive(opt.value)}
           className={cn(
-            "px-4 py-1.5 rounded-full transition-colors",
-            active === opt.value ? "bg-[#155eef] text-white" : "text-[#155eef]"
+            "px-5 py-2 text-sm font-medium transition-colors first:rounded-l-lg last:rounded-r-lg flex-1 whitespace-nowrap",
+            active === opt.value ? "bg-[#155eef] text-white" : "text-[#155eef] hover:bg-blue-50"
           )}
         >
           {opt.label}
@@ -130,11 +130,11 @@ const ExpandedChartDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-7xl w-[95vw] h-[90vh] max-h-[90vh] flex flex-col p-4">
-        <DialogHeader className="pb-3 flex-shrink-0">
+        <DialogHeader className="pb-3 flex-shrink-0  pr-12">
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between w-full">
               <DialogTitle className="text-2xl font-semibold">{title}</DialogTitle>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 flex-shrink-0 overflow-x-auto">
                 {/* Date Navigation */}
                 {chartDate && onDateChange && (
                   <div className="flex items-center gap-2">
@@ -501,7 +501,7 @@ const InsightsDashboard = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-6">
-            <h1 className="text-3xl font-semibold text-gray-900">Insights</h1>
+            <h1 className="text-3xl font-sans font-semibold text-[#0040c1]">Insights</h1>
             <div className="flex gap-2 bg-white rounded-lg p-1 border border-gray-200">
               <button
                 onClick={() => setSelectedView("DT")}
@@ -530,10 +530,11 @@ const InsightsDashboard = () => {
         </div>
 
         {/* Info Cards Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1  md:grid-cols-3 gap-6 mb-6">
           <InfoCard
             title="DT Name"
             value={dtInfo.name}
+            className={""}
             icon={
               <svg
                 className="w-5 h-5"
@@ -573,15 +574,10 @@ const InsightsDashboard = () => {
             icon={
               <svg
                 className="w-5 h-5"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
+                fill="currentColor"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
               >
-                <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 111.314 0z"></path>
-                <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"></path>
               </svg>
             }
           />
@@ -590,7 +586,7 @@ const InsightsDashboard = () => {
         {/* Charts Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <ChartCard
-            title="DT Spare Capacity"
+            title="DT Spare capacity"
             timeRangeButtons={[
               { label: "Last 24 Hours", value: "day" },
               { label: "Last Week", value: "week" },
