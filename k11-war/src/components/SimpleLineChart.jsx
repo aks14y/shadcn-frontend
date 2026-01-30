@@ -101,7 +101,7 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className })
   return (
     <div className={cn("w-full h-full relative", className)}>
       {yLabel && (
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 -rotate-90 origin-center text-xs text-gray-600 whitespace-nowrap z-10 pb-3">
+        <div className="absolute left-2 top-1/2 -rotate-90 text-xs text-gray-600 whitespace-nowrap z-10" style={{ transformOrigin: 'center left', transform: 'rotate(-90deg) translateX(-50%)' }}>
           {yLabel}
         </div>
       )}

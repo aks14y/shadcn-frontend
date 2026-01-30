@@ -23,7 +23,7 @@ const ChartCard = ({ title, timeRangeButtons = [], legend = [], children, classN
   const [selectedTimeRange, setSelectedTimeRange] = React.useState(timeRangeButtons[0]?.value || "");
 
   return (
-    <Card className={cn("w-full max-w-full overflow-hidden shadow-md hover:shadow-lg transition-shadow", className)}>
+    <Card className={cn("w-full max-w-[360px] sm:max-w-full overflow-hidden shadow-md hover:shadow-lg transition-shadow", className)}>
       <div className="p-2 sm:p-3 min-w-0">
         <div className="flex items-center justify-between gap-2 sm:gap-4 mb-2 sm:mb-3 min-w-0">
          <div className="min-w-0 flex-shrink">
