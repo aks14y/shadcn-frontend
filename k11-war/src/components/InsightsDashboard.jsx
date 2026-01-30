@@ -141,11 +141,11 @@ const ExpandedChartDialog = ({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={handlePrevDay}
-                      className="p-1.5 rounded hover:bg-gray-100 transition-colors"
+                      className="p-1.5 rounded-md hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200"
                       aria-label="Previous day"
                     >
                       <svg
-                        className="w-5 h-5 text-gray-600"
+                        className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors"
                         fill="none"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -161,7 +161,7 @@ const ExpandedChartDialog = ({
                     </span>
                     <button
                       onClick={handleNextDay}
-                      className="p-1.5 rounded hover:bg-gray-100 transition-colors"
+                      className="p-1.5 rounded-md hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200"
                       aria-label="Next day"
                     >
                       <svg
@@ -189,12 +189,12 @@ const ExpandedChartDialog = ({
                     <div className="relative" ref={calendarRef}>
                       <button
                         onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-                        className="p-2 hover:bg-gray-100 rounded transition-colors"
+                        className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
                         aria-label="Pick a date"
                         title="Pick a date"
                       >
                         <svg
-                          className="w-5 h-5 text-gray-600"
+                          className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors"
                           fill="none"
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -230,12 +230,12 @@ const ExpandedChartDialog = ({
                   {/* Refresh Icon */}
                   <button
                     onClick={handleRefresh}
-                    className="p-2 hover:bg-gray-100 rounded transition-colors"
+                    className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
                     aria-label="Refresh"
                     title="Refresh"
                   >
                     <svg
-                      className="w-5 h-5 text-gray-600"
+                      className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors"
                       fill="none"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -250,12 +250,12 @@ const ExpandedChartDialog = ({
                   {/* Download Icon */}
                   <button
                     onClick={handleDownload}
-                    className="p-2 hover:bg-gray-100 rounded transition-colors"
+                    className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
                     aria-label="Download"
                     title="Download"
                   >
                     <svg
-                      className="w-5 h-5 text-gray-600"
+                      className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors"
                       fill="none"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -270,12 +270,12 @@ const ExpandedChartDialog = ({
                   {/* Export Icon */}
                   <button
                     onClick={handleExport}
-                    className="p-2 hover:bg-gray-100 rounded transition-colors"
+                    className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
                     aria-label="Export"
                     title="Export"
                   >
                     <svg
-                      className="w-5 h-5 text-gray-600"
+                      className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors"
                       fill="none"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -291,15 +291,15 @@ const ExpandedChartDialog = ({
             </div>
             {/* Zoom Controls - separate row */}
             <div className="flex items-center justify-end w-full">
-              <div className="flex items-center gap-1 border border-gray-300 rounded p-0.5">
+              <div className="flex items-center gap-1 border border-gray-300 rounded-md p-0.5 bg-white shadow-sm">
                 <button
                   onClick={handleZoomIn}
-                  className="p-1.5 hover:bg-gray-100 rounded transition-colors"
+                  className="p-1.5 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
                   aria-label="Zoom in"
                   title="Zoom in"
                 >
                   <svg
-                    className="w-4 h-4 text-gray-600"
+                    className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -312,12 +312,12 @@ const ExpandedChartDialog = ({
                 </button>
                 <button
                   onClick={handleReset}
-                  className="p-1.5 hover:bg-gray-100 rounded transition-colors"
+                  className="p-1.5 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
                   aria-label="Reset zoom"
                   title="Reset zoom"
                 >
                   <svg
-                    className="w-4 h-4 text-gray-600"
+                    className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -330,12 +330,12 @@ const ExpandedChartDialog = ({
                 </button>
                 <button
                   onClick={handleZoomOut}
-                  className="p-1.5 hover:bg-gray-100 rounded transition-colors"
+                  className="p-1.5 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
                   aria-label="Zoom out"
                   title="Zoom out"
                 >
                   <svg
-                    className="w-4 h-4 text-gray-600"
+                    className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
