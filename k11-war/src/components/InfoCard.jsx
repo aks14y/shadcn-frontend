@@ -12,27 +12,28 @@ const InfoCard = ({
   className 
 }) => {
   return (
-    <Card className={cn("w-[27vw] h-[20vh] ", className)}>
-      <div className="">
-        <div className="flex items-start justify-between mb-6">
-          <h3 className="text-lg font-bold">{title}</h3>
+    // InfoCard layout container
+    <Card className={cn("w-full max-w-[360px] sm:max-w-full min-h-[100px] h-auto overflow-hidden shadow-md hover:shadow-lg transition-shadow", className)}>
+      <div className="min-w-0">
+        <div className="flex items-start justify-between gap-4 mb-3">
+          <h3 className="text-base sm:text-lg font-bold break-words">{title}</h3>
           {icon && (
-            <div className="text-gray-400">
-              {icon}
+            <div className=" shrink-0">
+              {React.cloneElement(icon, { className: "w-6 h-6 sm:w-7 sm:h-7" })}
             </div>
           )}
         </div>
 
-        <div className="mb-2 flex items-center justify-between "> 
-          <p className="text-2xl font-semibold  text-[#0040c1]">{value || "--"}</p>
+        <div className="mb-2 flex items-center justify-between gap-4"> 
+          <p className="text-xl sm:text-2xl font-semibold text-[#0040c1] break-words">{value || "--"}</p>
           {/*  */}
            {showSwitchButton && (
-          <div className="  ">
+          <div className="shrink-0">
             <Button
               variant="outline"
               size="sm"
               onClick={onSwitchClick}
-              className="text-sm bg-[#155eef] rounded-full text-white hover:bg-[#0040c1] "
+              className="text-xs sm:text-sm bg-[#155eef] rounded-full text-white hover:bg-[#0040c1] "
             >
               Switch DT
             </Button>

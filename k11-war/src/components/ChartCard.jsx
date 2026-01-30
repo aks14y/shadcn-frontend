@@ -23,22 +23,22 @@ const ChartCard = ({ title, timeRangeButtons = [], legend = [], children, classN
   const [selectedTimeRange, setSelectedTimeRange] = React.useState(timeRangeButtons[0]?.value || "");
 
   return (
-    <Card className={cn("w-full", className)}>
-      <div className="p-[16px]">
-        <div className="flex items-start justify-between mb-6">
-         <div>
-           <h3 className="text-l font-bold text-lg">{title}</h3>
+    <Card className={cn("w-full max-w-full overflow-hidden shadow-md hover:shadow-lg transition-shadow", className)}>
+      <div className="p-2 sm:p-3 min-w-0">
+        <div className="flex items-center justify-between gap-2 sm:gap-4 mb-2 sm:mb-3 min-w-0">
+         <div className="min-w-0 flex-shrink">
+           <h3 className="text-xs sm:text-base md:text-lg font-bold">{title}</h3>
          </div>
           
           {/*  */}
-          <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="inline-flex rounded-full border border-[#155eef] bg-white h-[32px]">
+          <div className="flex items-center gap-0.5 sm:gap-1 md:gap-1.5 lg:gap-2 xl:gap-3 flex-shrink-0">
+            <div className="inline-flex rounded-full border border-[#155eef] bg-white h-[18px] sm:h-[20px] md:h-[24px] lg:h-[26px] xl:h-[32px] overflow-hidden">
               {timeRangeButtons.map((button, index) => (
                 <button
                   key={button.value}
                   onClick={() => setSelectedTimeRange(button.value)}
                   className={cn(
-                    "px-4 py-1.5 text-xs font-medium transition-colors first:rounded-l-full last:rounded-r-full whitespace-nowrap h-full",
+                    "px-0.5 sm:px-1.5 md:px-2.5 lg:px-2.5 xl:px-4 py-0.5 text-[6px] sm:text-[8px] md:text-[9px] lg:text-[10px] xl:text-xs font-medium transition-colors first:rounded-l-full last:rounded-r-full whitespace-nowrap h-full",
                     selectedTimeRange === button.value
                       ? "bg-[#155eef] text-white"
                       : "text-[#155eef] hover:bg-blue-50",
@@ -55,11 +55,11 @@ const ChartCard = ({ title, timeRangeButtons = [], legend = [], children, classN
             {onExpand && (
               <button
                 onClick={onExpand}
-                className="p-2 hover:bg-gray-100 rounded transition-colors"
+                className="p-0.5 sm:p-0.5 md:p-1 lg:p-1 xl:p-2 hover:bg-gray-100 rounded transition-colors flex-shrink-0"
                 aria-label="Expand chart"
               >
                 <svg
-                  className="w-5 h-5 text-gray-600"
+                  className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-gray-600"
                   fill="none"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -74,12 +74,12 @@ const ChartCard = ({ title, timeRangeButtons = [], legend = [], children, classN
           </div>
            
         </div>
-        <div className="text-sm text-gray-600">
+        <div className="text-xs sm:text-sm text-gray-600 mb-2">
           {title === "DT Spare Capacity" ? "kW/kVA" : title === "Voltage" ? "Volts" : null}
         </div>
 
         {/* Chart Area */}
-        <div className="w-full h-80 bg-white border border-gray-200 rounded-lg p-6 flex flex-col">
+        <div className="w-full h-32 sm:h-40 md:h-48 lg:h-56 xl:h-64 bg-white border border-gray-200 rounded-lg p-2 sm:p-3 md:p-4 flex flex-col overflow-hidden">
           {children || (series && series.length > 0 ? (
             <SimpleLineChart 
               series={series} 
@@ -93,7 +93,7 @@ const ChartCard = ({ title, timeRangeButtons = [], legend = [], children, classN
 
         {/* Legend */}
         {legend.length > 0 && (
-          <div className="flex items-center gap-6 mt-6">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-6 mt-2 sm:mt-3">
             {legend.map((item, index) => (
               <div key={index} className="flex items-center gap-2">
                 <div

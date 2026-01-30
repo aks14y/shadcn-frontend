@@ -12,13 +12,14 @@ const TimeRangeTabs = ({ options }) => {
 
   return (
     <div className="inline-flex rounded-lg border border-[#155eef] bg-white gap-0">
-      {options.map((opt) => (
+      {options.map((opt, index) => (
         <button
           key={opt.value}
           onClick={() => setActive(opt.value)}
           className={cn(
             "px-5 py-2 text-sm font-medium transition-colors first:rounded-l-lg last:rounded-r-lg flex-1 whitespace-nowrap",
-            active === opt.value ? "bg-[#155eef] text-white" : "text-[#155eef] hover:bg-blue-50"
+            active === opt.value ? "bg-[#155eef] text-white" : "text-[#155eef] hover:bg-blue-50",
+            index > 0 && "border-l border-[#155eef]"
           )}
         >
           {opt.label}
@@ -496,20 +497,21 @@ const InsightsDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-10xl mx-auto">
+    <div className="min-h-screen bg-gray-50 p-6 overflow-x-hidden">
+      <div className="max-w-10xl mx-auto w-full min-w-0">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-6">
             <h1 className="text-3xl font-sans font-semibold text-[#0040c1]">Insights</h1>
-            <div className="flex gap-2 bg-white rounded-lg p-1 border border-gray-200">
+            {/*  */}
+            <div className="inline-flex rounded border border-[#155eef] bg-white">
               <button
                 onClick={() => setSelectedView("DT")}
                 className={cn(
-                  "px-6 py-2 text-sm font-medium rounded-md transition-colors",
+                  "px-6 py-2 text-sm font-medium transition-colors first:rounded-l last:rounded-r whitespace-nowrap",
                   selectedView === "DT"
                     ? "bg-[#155eef] text-white"
-                    : "text-[#155eef] hover:bg-gray-50"
+                    : "text-[#155eef] hover:bg-blue-50"
                 )}
               >
                 DT
@@ -517,20 +519,21 @@ const InsightsDashboard = () => {
               <button
                 onClick={() => setSelectedView("Site")}
                 className={cn(
-                  "px-6 py-2 text-sm font-medium rounded-md transition-colors",
+                  "px-6 py-2 text-sm font-medium transition-colors first:rounded-l last:rounded-r whitespace-nowrap",
                   selectedView === "Site"
                     ? "bg-[#155eef] text-white"
-                    : "text-[#155eef] hover:bg-gray-50"
+                    : "text-[#155eef] hover:bg-blue-50"
                 )}
               >
                 Site
               </button>
             </div>
+            {/*  */}
           </div>
         </div>
 
         {/* Info Cards Row */}
-        <div className="grid grid-cols-1  md:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           <InfoCard
             title="DT Name"
             value={dtInfo.name}
