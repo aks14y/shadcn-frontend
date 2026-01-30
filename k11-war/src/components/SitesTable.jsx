@@ -42,7 +42,13 @@ const SitesTable = ({ data = [], columns = [], title = "Sites List" }) => {
                         key={colIndex}
                         className="px-4 py-3 text-sm text-gray-700"
                       >
-                        {row[column.accessor] || "--"}
+                        {colIndex === 0 ? (
+                          <a href="#" className="text-[#155eef] underline hover:text-[#0040c1] transition-colors">
+                            {row[column.accessor] || "--"}
+                          </a>
+                        ) : (
+                          row[column.accessor] || "--"
+                        )}
                       </td>
                     ))}
                   </tr>

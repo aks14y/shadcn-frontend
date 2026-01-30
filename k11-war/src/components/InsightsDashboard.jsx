@@ -11,14 +11,15 @@ const TimeRangeTabs = ({ options }) => {
   const [active, setActive] = React.useState(options[0]?.value || "");
 
   return (
-    <div className="inline-flex rounded-full bg-[#f5f5ff] p-1 text-sm font-medium">
-      {options.map((opt) => (
+    <div className="inline-flex rounded-lg border border-[#155eef] bg-white gap-0">
+      {options.map((opt, index) => (
         <button
           key={opt.value}
           onClick={() => setActive(opt.value)}
           className={cn(
-            "px-4 py-1.5 rounded-full transition-colors",
-            active === opt.value ? "bg-[#155eef] text-white" : "text-[#155eef]"
+            "px-5 py-2 text-sm font-medium transition-colors first:rounded-l-lg last:rounded-r-lg flex-1 whitespace-nowrap",
+            active === opt.value ? "bg-[#155eef] text-white" : "text-[#155eef] hover:bg-blue-50",
+            index > 0 && "border-l border-[#155eef]"
           )}
         >
           {opt.label}
@@ -130,21 +131,21 @@ const ExpandedChartDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-7xl w-[95vw] h-[90vh] max-h-[90vh] flex flex-col p-4">
-        <DialogHeader className="pb-3 flex-shrink-0">
+        <DialogHeader className="pb-3 flex-shrink-0  pr-12">
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between w-full">
               <DialogTitle className="text-2xl font-semibold">{title}</DialogTitle>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 flex-shrink-0 overflow-x-auto">
                 {/* Date Navigation */}
                 {chartDate && onDateChange && (
                   <div className="flex items-center gap-2">
                     <button
                       onClick={handlePrevDay}
-                      className="p-1.5 rounded hover:bg-gray-100 transition-colors"
+                      className="p-1.5 rounded-md hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200"
                       aria-label="Previous day"
                     >
                       <svg
-                        className="w-5 h-5 text-gray-600"
+                        className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors"
                         fill="none"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -160,7 +161,7 @@ const ExpandedChartDialog = ({
                     </span>
                     <button
                       onClick={handleNextDay}
-                      className="p-1.5 rounded hover:bg-gray-100 transition-colors"
+                      className="p-1.5 rounded-md hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200"
                       aria-label="Next day"
                     >
                       <svg
@@ -188,12 +189,12 @@ const ExpandedChartDialog = ({
                     <div className="relative" ref={calendarRef}>
                       <button
                         onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-                        className="p-2 hover:bg-gray-100 rounded transition-colors"
+                        className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
                         aria-label="Pick a date"
                         title="Pick a date"
                       >
                         <svg
-                          className="w-5 h-5 text-gray-600"
+                          className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors"
                           fill="none"
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -229,12 +230,12 @@ const ExpandedChartDialog = ({
                   {/* Refresh Icon */}
                   <button
                     onClick={handleRefresh}
-                    className="p-2 hover:bg-gray-100 rounded transition-colors"
+                    className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
                     aria-label="Refresh"
                     title="Refresh"
                   >
                     <svg
-                      className="w-5 h-5 text-gray-600"
+                      className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors"
                       fill="none"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -249,12 +250,12 @@ const ExpandedChartDialog = ({
                   {/* Download Icon */}
                   <button
                     onClick={handleDownload}
-                    className="p-2 hover:bg-gray-100 rounded transition-colors"
+                    className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
                     aria-label="Download"
                     title="Download"
                   >
                     <svg
-                      className="w-5 h-5 text-gray-600"
+                      className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors"
                       fill="none"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -269,12 +270,12 @@ const ExpandedChartDialog = ({
                   {/* Export Icon */}
                   <button
                     onClick={handleExport}
-                    className="p-2 hover:bg-gray-100 rounded transition-colors"
+                    className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
                     aria-label="Export"
                     title="Export"
                   >
                     <svg
-                      className="w-5 h-5 text-gray-600"
+                      className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors"
                       fill="none"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -290,15 +291,15 @@ const ExpandedChartDialog = ({
             </div>
             {/* Zoom Controls - separate row */}
             <div className="flex items-center justify-end w-full">
-              <div className="flex items-center gap-1 border border-gray-300 rounded p-0.5">
+              <div className="flex items-center gap-1 border border-gray-300 rounded-md p-0.5 bg-white shadow-sm">
                 <button
                   onClick={handleZoomIn}
-                  className="p-1.5 hover:bg-gray-100 rounded transition-colors"
+                  className="p-1.5 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
                   aria-label="Zoom in"
                   title="Zoom in"
                 >
                   <svg
-                    className="w-4 h-4 text-gray-600"
+                    className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -311,12 +312,12 @@ const ExpandedChartDialog = ({
                 </button>
                 <button
                   onClick={handleReset}
-                  className="p-1.5 hover:bg-gray-100 rounded transition-colors"
+                  className="p-1.5 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
                   aria-label="Reset zoom"
                   title="Reset zoom"
                 >
                   <svg
-                    className="w-4 h-4 text-gray-600"
+                    className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -329,12 +330,12 @@ const ExpandedChartDialog = ({
                 </button>
                 <button
                   onClick={handleZoomOut}
-                  className="p-1.5 hover:bg-gray-100 rounded transition-colors"
+                  className="p-1.5 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
                   aria-label="Zoom out"
                   title="Zoom out"
                 >
                   <svg
-                    className="w-4 h-4 text-gray-600"
+                    className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -496,20 +497,21 @@ const InsightsDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-10xl mx-auto">
+    <div className="min-h-screen bg-gray-50 p-6 overflow-x-hidden">
+      <div className="max-w-10xl mx-auto w-full min-w-0">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-6">
-            <h1 className="text-3xl font-semibold text-gray-900">Insights</h1>
-            <div className="flex gap-2 bg-white rounded-lg p-1 border border-gray-200">
+            <h1 className="text-3xl font-sans font-semibold text-[#0040c1]">Insights</h1>
+            {/*  */}
+            <div className="inline-flex rounded border border-[#155eef] bg-white">
               <button
                 onClick={() => setSelectedView("DT")}
                 className={cn(
-                  "px-6 py-2 text-sm font-medium rounded-md transition-colors",
+                  "px-6 py-2 text-sm font-medium transition-colors first:rounded-l last:rounded-r whitespace-nowrap",
                   selectedView === "DT"
                     ? "bg-[#155eef] text-white"
-                    : "text-[#155eef] hover:bg-gray-50"
+                    : "text-[#155eef] hover:bg-blue-50"
                 )}
               >
                 DT
@@ -517,23 +519,25 @@ const InsightsDashboard = () => {
               <button
                 onClick={() => setSelectedView("Site")}
                 className={cn(
-                  "px-6 py-2 text-sm font-medium rounded-md transition-colors",
+                  "px-6 py-2 text-sm font-medium transition-colors first:rounded-l last:rounded-r whitespace-nowrap",
                   selectedView === "Site"
                     ? "bg-[#155eef] text-white"
-                    : "text-[#155eef] hover:bg-gray-50"
+                    : "text-[#155eef] hover:bg-blue-50"
                 )}
               >
                 Site
               </button>
             </div>
+            {/*  */}
           </div>
         </div>
 
         {/* Info Cards Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           <InfoCard
             title="DT Name"
             value={dtInfo.name}
+            className={""}
             icon={
               <svg
                 className="w-5 h-5"
@@ -573,15 +577,10 @@ const InsightsDashboard = () => {
             icon={
               <svg
                 className="w-5 h-5"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
+                fill="currentColor"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
               >
-                <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 111.314 0z"></path>
-                <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"></path>
               </svg>
             }
           />
