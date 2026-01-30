@@ -99,9 +99,9 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className })
   };
 
   return (
-    <div className={cn("w-full h-full relative", className)}>
+    <div className={cn("w-full h-full min-w-0 relative", className)}>
       {yLabel && (
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 -rotate-90 origin-center text-xs text-gray-600 whitespace-nowrap z-10 pb-3">
+        <div className="absolute -left-1 sm:-left-3 top-1/2 -translate-y-1/2 -rotate-90 origin-center text-xs text-gray-600 whitespace-nowrap z-10 pb-3">
           {yLabel}
         </div>
       )}
@@ -111,7 +111,7 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className })
         opts={{ renderer: "svg" }}
       />
       {xLabel && (
-        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 text-xs text-gray-600">
+        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs text-gray-600">
           {xLabel}
         </div>
       )}

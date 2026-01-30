@@ -142,4 +142,12 @@
   margin-left: 4px;
 }
 
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+
 /* Portal elements - inline styles removed by MutationObserver, positioning handled by CSS */
