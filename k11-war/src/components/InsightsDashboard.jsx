@@ -133,15 +133,16 @@ const ExpandedChartDialog = ({
       <DialogContent className="max-w-7xl w-[95vw] h-[90vh] max-h-[90vh] flex flex-col p-4">
         <DialogHeader className="pb-3 flex-shrink-0  pr-12">
           <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between w-full">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-3">
               <DialogTitle className="text-2xl font-semibold">{title}</DialogTitle>
-              <div className="flex items-center gap-4 flex-shrink-0 overflow-x-auto">
+              <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-start sm:justify-end">
+                
                 {/* Date Navigation */}
                 {chartDate && onDateChange && (
                   <div className="flex items-center gap-2">
                     <button
                       onClick={handlePrevDay}
-                      className="p-1.5 rounded-md hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200"
+                      className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                       aria-label="Previous day"
                     >
                       <svg
@@ -161,7 +162,7 @@ const ExpandedChartDialog = ({
                     </span>
                     <button
                       onClick={handleNextDay}
-                      className="p-1.5 rounded-md hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200"
+                      className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                       aria-label="Next day"
                     >
                       <svg
@@ -180,7 +181,11 @@ const ExpandedChartDialog = ({
                 )}
 
                 {/* Time Range Tabs */}
-                {timeRangeOptions && <TimeRangeTabs options={timeRangeOptions} />}
+                {timeRangeOptions && (
+                  <div className="max-w-full overflow-x-auto">
+                    <TimeRangeTabs options={timeRangeOptions} />
+                  </div>
+                )}
 
                 {/* Utility Icons */}
                 <div className="flex items-center gap-2">
@@ -189,7 +194,7 @@ const ExpandedChartDialog = ({
                     <div className="relative" ref={calendarRef}>
                       <button
                         onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-                        className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
+                        className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                         aria-label="Pick a date"
                         title="Pick a date"
                       >
@@ -230,7 +235,7 @@ const ExpandedChartDialog = ({
                   {/* Refresh Icon */}
                   <button
                     onClick={handleRefresh}
-                    className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
+                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                     aria-label="Refresh"
                     title="Refresh"
                   >
@@ -250,7 +255,7 @@ const ExpandedChartDialog = ({
                   {/* Download Icon */}
                   <button
                     onClick={handleDownload}
-                    className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
+                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                     aria-label="Download"
                     title="Download"
                   >
@@ -270,7 +275,7 @@ const ExpandedChartDialog = ({
                   {/* Export Icon */}
                   <button
                     onClick={handleExport}
-                    className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
+                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                     aria-label="Export"
                     title="Export"
                   >
@@ -291,10 +296,10 @@ const ExpandedChartDialog = ({
             </div>
             {/* Zoom Controls - separate row */}
             <div className="flex items-center justify-end w-full">
-              <div className="flex items-center gap-1 border border-gray-300 rounded-md p-0.5 bg-white shadow-sm">
+              <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-1 bg-gray-50 shadow-sm">
                 <button
                   onClick={handleZoomIn}
-                  className="p-1.5 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
+                  className="p-1.5 rounded-md bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                   aria-label="Zoom in"
                   title="Zoom in"
                 >
@@ -312,7 +317,7 @@ const ExpandedChartDialog = ({
                 </button>
                 <button
                   onClick={handleReset}
-                  className="p-1.5 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
+                  className="p-1.5 rounded-md bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                   aria-label="Reset zoom"
                   title="Reset zoom"
                 >
@@ -330,7 +335,7 @@ const ExpandedChartDialog = ({
                 </button>
                 <button
                   onClick={handleZoomOut}
-                  className="p-1.5 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
+                  className="p-1.5 rounded-md bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                   aria-label="Zoom out"
                   title="Zoom out"
                 >
@@ -517,7 +522,10 @@ const InsightsDashboard = () => {
                 DT
               </button>
               <button
-                onClick={() => setSelectedView("Site")}
+                onClick={() => {
+                  // console.log("Changing to Site");
+                  setSelectedView("Site");
+                }}
                 className={cn(
                   "px-6 py-2 text-sm font-medium transition-colors first:rounded-l last:rounded-r whitespace-nowrap",
                   selectedView === "Site"
@@ -532,129 +540,134 @@ const InsightsDashboard = () => {
           </div>
         </div>
 
-        {/* Info Cards Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-          <InfoCard
-            title="DT Name"
-            value={dtInfo.name}
-            className={""}
-            icon={
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-              </svg>
-            }
-            showSwitchButton={true}
-            onSwitchClick={() => console.log("Switch DT clicked")}
-          />
-          <InfoCard
-            title="Capacity"
-            value={dtInfo.capacity}
-            icon={
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
-              </svg>
-            }
-          />
-          <InfoCard
-            title="Location"
-            value={dtInfo.location}
-            icon={
-              <svg
-                className="w-5 h-5"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"></path>
-              </svg>
-            }
-          />
-        </div>
+        {/* Conditional Rendering based on Selected View */}
+        {selectedView === "DT" && (
+          <>
+            {/* Info Cards Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+              <InfoCard
+                title="DT Name"
+                value={dtInfo.name}
+                className={""}
+                icon={
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                  </svg>
+                }
+                showSwitchButton={true}
+                onSwitchClick={() => console.log("Switch DT clicked")}
+              />
+              <InfoCard
+                title="Capacity"
+                value={dtInfo.capacity}
+                icon={
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                  </svg>
+                }
+              />
+              <InfoCard
+                title="Location"
+                value={dtInfo.location}
+                icon={
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"></path>
+                  </svg>
+                }
+              />
+            </div>
 
-        {/* Charts Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <ChartCard
-            title="DT Spare Capacity"
-            timeRangeButtons={[
-              { label: "Last 24 Hours", value: "day" },
-              { label: "Last Week", value: "week" },
-              { label: "Last Month", value: "month" },
-            ]}
-            legend={[
-              { label: "kW", color: "#0040C1" },
-              { label: "kVA", color: "#66BB6A" },
-            ]}
-            onExpand={() => setCapacityExpanded(true)}
-            series={CAPACITY_SERIES}
-          />
-          <ChartCard
-            title="Voltage"
-            timeRangeButtons={[
-              { label: "Last 24 Hours", value: "day" },
-              { label: "Last Week", value: "week" },
-              { label: "Last Month", value: "month" },
-            ]}
-            legend={[{ label: "Voltage (Vmax Average)", color: "#673AB7" }]}
-            onExpand={() => setVoltageExpanded(true)}
-            series={VOLTAGE_INSIGHTS_SERIES}
-          />
-        </div>
+            {/* Charts Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <ChartCard
+                title="DT Spare Capacity"
+                timeRangeButtons={[
+                  { label: "Last 24 Hours", value: "day" },
+                  { label: "Last Week", value: "week" },
+                  { label: "Last Month", value: "month" },
+                ]}
+                legend={[
+                  { label: "kW", color: "#0040C1" },
+                  { label: "kVA", color: "#66BB6A" },
+                ]}
+                onExpand={() => setCapacityExpanded(true)}
+                series={CAPACITY_SERIES}
+              />
+              <ChartCard
+                title="Voltage"
+                timeRangeButtons={[
+                  { label: "Last 24 Hours", value: "day" },
+                  { label: "Last Week", value: "week" },
+                  { label: "Last Month", value: "month" },
+                ]}
+                legend={[{ label: "Voltage (Vmax Average)", color: "#673AB7" }]}
+                onExpand={() => setVoltageExpanded(true)}
+                series={VOLTAGE_INSIGHTS_SERIES}
+              />
+            </div>
 
-        {/* Expanded Chart Dialogs */}
-        <ExpandedChartDialog
-          open={capacityExpanded}
-          onOpenChange={setCapacityExpanded}
-          title="DT Spare Capacity"
-          timeRangeOptions={[
-            { label: "Last 24 Hours", value: "day" },
-            { label: "Last Week", value: "week" },
-            { label: "Last Month", value: "month" },
-          ]}
-          legend={[
-            { label: "kW", color: "#0040C1" },
-            { label: "kVA", color: "#66BB6A" },
-          ]}
-          series={CAPACITY_SERIES}
-          xLabel="Time"
-          yLabel="Capacity (kW/kVA)"
-          chartDate={capacityDate}
-          onDateChange={setCapacityDate}
-        />
+            {/* Expanded Chart Dialogs */}
+            <ExpandedChartDialog
+              open={capacityExpanded}
+              onOpenChange={setCapacityExpanded}
+              title="DT Spare Capacity"
+              timeRangeOptions={[
+                { label: "Last 24 Hours", value: "day" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+              ]}
+              legend={[
+                { label: "kW", color: "#0040C1" },
+                { label: "kVA", color: "#66BB6A" },
+              ]}
+              series={CAPACITY_SERIES}
+              xLabel="Time"
+              yLabel="Capacity (kW/kVA)"
+              chartDate={capacityDate}
+              onDateChange={setCapacityDate}
+            />
 
-        <ExpandedChartDialog
-          open={voltageExpanded}
-          onOpenChange={setVoltageExpanded}
-          title="Voltage"
-          timeRangeOptions={[
-            { label: "Last 24 Hours", value: "day" },
-            { label: "Last Week", value: "week" },
-            { label: "Last Month", value: "month" },
-          ]}
-          legend={[{ label: "Voltage (Vmax Average)", color: "#673AB7" }]}
-          series={VOLTAGE_INSIGHTS_SERIES}
-          xLabel="Time"
-          yLabel="Voltage (V)"
-          chartDate={voltageDate}
-          onDateChange={setVoltageDate}
-        />
+            <ExpandedChartDialog
+              open={voltageExpanded}
+              onOpenChange={setVoltageExpanded}
+              title="Voltage"
+              timeRangeOptions={[
+                { label: "Last 24 Hours", value: "day" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+              ]}
+              legend={[{ label: "Voltage (Vmax Average)", color: "#673AB7" }]}
+              series={VOLTAGE_INSIGHTS_SERIES}
+              xLabel="Time"
+              yLabel="Voltage (V)"
+              chartDate={voltageDate}
+              onDateChange={setVoltageDate}
+            />
 
-        {/* Sites Table */}
-        <SitesTable title="Sites List" columns={sitesTableColumns} data={sitesTableData} />
+            {/* Sites Table */}
+            <SitesTable title="Sites List" columns={sitesTableColumns} data={sitesTableData} />
+          </>
+        )}
       </div>
     </div>
   );
