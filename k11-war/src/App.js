@@ -12,7 +12,7 @@ const AppContent = () => {
   const [activeNav, setActiveNav] = useState("monitor"); // monitor = Sites Dashboard, insights = DT view
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex overflow-x-hidden">
       <LeftSidebar
         activeItem={activeNav}
         onToggle={setIsSidebarExpanded}
@@ -21,7 +21,7 @@ const AppContent = () => {
 
       <div
         className={cn(
-          "flex-1 transition-all duration-300",
+          "flex-1 min-w-0 transition-all duration-300",
           isSidebarExpanded ? "ml-[150px]" : "ml-[5rem]"
         )}
       >
