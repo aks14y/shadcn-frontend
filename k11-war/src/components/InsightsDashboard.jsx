@@ -6,6 +6,7 @@ import ChartCard from "./ChartCard";
 import SitesTable from "./SitesTable";
 import { SimpleLineChart } from "./SimpleLineChart";
 import { CAPACITY_SERIES, VOLTAGE_INSIGHTS_SERIES } from "../utils/chartUtils";
+import { set } from "date-fns";
 
 const TimeRangeTabs = ({ options }) => {
   const [active, setActive] = React.useState(options[0]?.value || "");
@@ -380,6 +381,10 @@ const ExpandedChartDialog = ({
                         ? "bg-green-500"
                         : item.color === "#673AB7"
                         ? "bg-purple-600"
+                        : item.color === "#60a5fa"
+                        ? "bg-blue-400"
+                        : item.color === "#a78bfa"
+                        ? "bg-purple-400"
                         : "bg-gray-500"
                     )}
                   />
@@ -396,16 +401,40 @@ const ExpandedChartDialog = ({
 
 const InsightsDashboard = () => {
   const [selectedView, setSelectedView] = useState("DT");
+  
+  // DT View States
   const [capacityExpanded, setCapacityExpanded] = useState(false);
   const [voltageExpanded, setVoltageExpanded] = useState(false);
   const [capacityDate, setCapacityDate] = useState(new Date("2026-01-22"));
   const [voltageDate, setVoltageDate] = useState(new Date("2026-01-22"));
-
+  
+  // Site View States
+  const [siteDynamicHostingCapacityExpanded, setSiteDynamicHostingCapacityExpanded] = useState(false);
+  const [siteEVChargerExpanded, setSiteEVChargerExpanded] = useState(false);
+  const [sitePowerVmax, setSitePowerVmax] = useState(false);
+  const [siteVmax, setSiteVmax] = useState(false);
+  const [siteDisaggregation, setSiteDisaggregation] = useState(false);
+  
+  const [siteDynamicHostingCapacityDate, setSiteDynamicHostingCapacityDate] = useState(new Date("2026-01-22"));
+  const [siteEVChargerDate, setSiteEVChargerDate] = useState(new Date("2026-01-22"));
+  const [sitePowerVmaxDate, setSitePowerVmaxDate] = useState(new Date("2026-01-22"));
+  const [siteVmaxDate, setSiteVmaxDate] = useState(new Date("2026-01-22"));
+  const [siteDisaggregationDate, setSiteDisaggregationDate] = useState(new Date("2026-01-22"));
+  
+  
   const dtInfo = {
     name: "DT-001",
     capacity: "500 kVA",
     location: "San Francisco, CA",
   };
+
+  const siteInfo ={
+    name: "Site Alpha",
+    siteId: "SITE-001",
+    capacity: "500 kW",
+    location: "San Francisco, CA",
+    type: "Solar PV",
+  }
 
   const sitesTableColumns = [
     { header: "Site Name", accessor: "siteName" },
@@ -667,6 +696,279 @@ const InsightsDashboard = () => {
             {/* Sites Table */}
             <SitesTable title="Sites List" columns={sitesTableColumns} data={sitesTableData} />
           </>
+        )}
+
+
+        {/* Conditional Rendering for Site View */}
+        {selectedView === "Site" && (
+          <>
+           {/* Info Cards Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              <InfoCard
+                title="Site Name"
+                value={dtInfo.name}
+                className={""}
+                icon={
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                  </svg>
+                }
+                showSwitchButton={true}
+                onSwitchClick={() => console.log("Switch DT clicked")}
+              />
+           
+
+               <InfoCard
+                title="Site ID"
+                value={siteInfo.siteId}
+                icon={
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                  </svg>
+                }
+              />
+          
+              <InfoCard
+                title="Type"
+                value={siteInfo.type}
+                icon={
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"></path>
+                  </svg>
+                }
+              />
+                <InfoCard
+                title="Location"
+                value={siteInfo.location}
+                icon={
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                  </svg>
+                }
+              />
+            </div>
+
+             {/* Charts Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <ChartCard
+                title="Dynamic Hosting Capacity"
+                timeRangeButtons={[
+                  { label: "Last 24 Hours", value: "day" },
+                  { label: "Last Week", value: "week" },
+                  { label: "Last Month", value: "month" },
+                ]}
+                legend={[
+                  { label: "Hosting capacity", color: "#0040C1" },
+                  // { label: "kVA", color: "#66BB6A" },
+                ]}
+                onExpand={() => setSiteDynamicHostingCapacityExpanded(true)}
+                series={CAPACITY_SERIES}
+              />
+              <ChartCard
+                title="EV charger"
+                timeRangeButtons={[
+                  { label: "Last 24 Hours", value: "day" },
+                  { label: "Last Week", value: "week" },
+                  { label: "Last Month", value: "month" },
+                ]}
+                legend={[{ label: "Charging state ", color: "#66BB6A" }]}
+                onExpand={() => setSiteEVChargerExpanded(true)}
+                series={VOLTAGE_INSIGHTS_SERIES}
+              />
+              <ChartCard
+                title="Power @ Vmax"
+                timeRangeButtons={[
+                  { label: "Last 24 Hours", value: "day" },
+                  { label: "Last Week", value: "week" },
+                  { label: "Last Month", value: "month" },
+                ]}
+                legend={[
+                  { label: "Active Power", color: "#0040C1" },
+                  { label: "Reactive Power", color: "#66BB6A" },
+                ]}
+                onExpand={() => setSitePowerVmax(true)}
+                series={CAPACITY_SERIES}
+              />
+              <ChartCard
+                title="Vmax"
+                timeRangeButtons={[
+                  { label: "Last 24 Hours", value: "day" },
+                  { label: "Last Week", value: "week" },
+                  { label: "Last Month", value: "month" },
+                ]}
+                legend={[
+                  
+                  { label: "Voltage(LL)", color: "#66BB6A" },
+                ]}
+                onExpand={() => setSiteVmax(true)}
+                series={CAPACITY_SERIES}
+              />
+              
+            </div>
+             <ChartCard
+                title="Disaggregation Summary"
+                timeRangeButtons={[
+                  { label: "Last 24 Hours", value: "day" },
+                  { label: "Last Week", value: "week" },
+                  { label: "Last Month", value: "month" },
+                ]}
+                legend={[
+                  { label: "Consumption", color: "#0040C1" },
+                  { label: "Generation", color: "#60a5fa" },
+                  { label: "Import", color: "#673AB7" },
+                  { label: "Export", color: "#a78bfa" },
+                ]}
+                onExpand={() => setSiteDisaggregation(true)}
+                series={CAPACITY_SERIES}
+              />
+
+
+             
+               
+              
+            {/* Expanded Chart Dialogs for Site View */}
+
+            {/* expanded char for dynamic hosting capacity */}
+            <ExpandedChartDialog
+              open={siteDynamicHostingCapacityExpanded}
+              onOpenChange={setSiteDynamicHostingCapacityExpanded}
+              title="Dynamic Hosting Capacity"
+              timeRangeOptions={[
+                { label: "Last 24 Hours", value: "day" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+              ]}
+              legend={[
+                { label: "Hosting capacity", color: "#0040C1" },
+              ]}
+              series={CAPACITY_SERIES}
+              xLabel="Time"
+              yLabel="Hosting Capacity (kW)"
+              chartDate={siteDynamicHostingCapacityDate}
+              onDateChange={setSiteDynamicHostingCapacityDate}
+            />
+
+              {/* expanded chart for EV charger */}
+            <ExpandedChartDialog
+              open={siteEVChargerExpanded}
+              onOpenChange={setSiteEVChargerExpanded}
+              title="EV Charger"
+              timeRangeOptions={[
+                { label: "Last 24 Hours", value: "day" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+              ]}
+              legend={[{ label: "Charging state ", color: "#66BB6A" }]}
+              series={VOLTAGE_INSIGHTS_SERIES}
+              xLabel="Time"
+              yLabel="Voltage (V)"
+              chartDate={siteEVChargerDate}
+              onDateChange={setSiteEVChargerDate}
+            />
+
+            {/* Expandede chart for power @ Vmax */}
+              <ExpandedChartDialog
+              open={sitePowerVmax}
+              onOpenChange={setSitePowerVmax}
+              title="Power @ Vmax"
+              timeRangeOptions={[
+                { label: "Last 24 Hours", value: "day" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+              ]}
+              legend={[
+                { label: "Active Power", color: "#0040C1" },
+                { label: "Reactive Power", color: "#66BB6A" },
+              ]}
+              series={CAPACITY_SERIES}
+              xLabel="Time"
+              yLabel="Capacity (kW/kVA)"
+              chartDate={sitePowerVmaxDate}
+              onDateChange={setSitePowerVmaxDate}
+            />
+
+            {/* Expanded chart for Vmax */}
+              <ExpandedChartDialog
+              open={siteVmax}
+              onOpenChange={setSiteVmax}
+              title="Vmax"
+              timeRangeOptions={[
+                { label: "Last 24 Hours", value: "day" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+              ]}
+              legend={[
+              
+                { label: "Voltage(LL)", color: "#66BB6A" },
+              ]}
+              series={CAPACITY_SERIES}
+              xLabel="Time"
+              yLabel="Capacity (kW/kVA)"
+              chartDate={siteVmaxDate}
+              onDateChange={setSiteVmaxDate}
+            />
+
+            {/* expanded chart for disaggregation summary */}
+              <ExpandedChartDialog
+              open={siteDisaggregation}
+              onOpenChange={setSiteDisaggregation}
+              title="Disaggregation Summary"
+              timeRangeOptions={[
+                { label: "Last 24 Hours", value: "day" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+              ]}
+              legend={[
+                { label: "Consumption", color: "#0040C1" },
+                { label: "Generation", color: "#60a5fa" },
+                { label: "Import", color: "#673AB7" },
+                { label: "Export", color: "#a78bfa" },
+              ]}
+              series={CAPACITY_SERIES}
+              // xLabel="Time"
+              yLabel="Kwh"
+              chartDate={siteDisaggregationDate}
+              onDateChange={setSiteDisaggregationDate}
+            />
+
+          
+
+
+
+
+
+          </>
+
+          
+          
         )}
       </div>
     </div>
