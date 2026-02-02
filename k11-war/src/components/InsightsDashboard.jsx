@@ -316,6 +316,8 @@ const ExpandedChartDialog = ({
                 zoom={zoom}
                 xLabel={xLabel}
                 yLabel={yLabel}
+                startDate={startDate}
+                endDate={endDate}
                 className="w-full h-full"
               />
             </div>

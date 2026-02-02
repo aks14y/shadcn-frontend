@@ -2,7 +2,7 @@ import React from "react";
 import ReactECharts from "echarts-for-react";
 import { cn } from "../design-system/utils/utils";
 
-export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className }) => {
+export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className, startDate = undefined, endDate = undefined   }) => {
   const maxPoints = Math.max(...series.map((s) => s.data.length));
   const visiblePoints = Math.max(4, Math.floor(maxPoints / zoom));
 
@@ -135,17 +135,39 @@ tooltip: {
     
     const dataIndex = params[0].dataIndex;
     
-    const now = new Date();
-    const dataDate = new Date(now.getTime() - (100 - dataIndex) * 15 * 60000);
-    const dateStr = dataDate.toLocaleDateString('en-US', { 
-      day: 'numeric', 
-      month: 'short', 
-      year: 'numeric' 
-    }) + ', ' + dataDate.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit', 
-      hour12: true 
-    });
+    // Calculate actual date based on startDate and endDate if provided
+    let dateStr;
+    if (startDate && endDate) {
+      const totalPoints = truncatedSeries[0]?.data.length || 1;
+      const startTime = new Date(startDate).getTime();
+      const endTime = new Date(endDate).getTime();
+      const timeRange = endTime - startTime;
+      const pointTime = startTime + (dataIndex / (totalPoints - 1)) * timeRange;
+      const dataDate = new Date(pointTime);
+      
+      dateStr = dataDate.toLocaleDateString('en-US', { 
+        day: 'numeric', 
+        month: 'short', 
+        year: 'numeric' 
+      }) + ', ' + dataDate.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: true 
+      });
+    } else {
+      // Fallback to index-based calculation
+      const now = new Date();
+      const dataDate = new Date(now.getTime() - (100 - dataIndex) * 15 * 60000);
+      dateStr = dataDate.toLocaleDateString('en-US', { 
+        day: 'numeric', 
+        month: 'short', 
+        year: 'numeric' 
+      }) + ', ' + dataDate.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: true 
+      });
+    }
     
     // Use Unicode circle character instead of HTML/CSS
     let tooltip = dateStr + '<br/><br/>';
