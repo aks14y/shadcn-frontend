@@ -2,11 +2,39 @@ import React from "react";
 
 const HeaderCheckboxDropdown = ({ label, options, align = "left" }) => {
   const [open, setOpen] = React.useState(false);
+  const triggerRef = React.useRef(null);
+  const dropdownRef = React.useRef(null);
+  const [triggerRect, setTriggerRect] = React.useState(null);
+
+  React.useEffect(() => {
+    if (open && triggerRef.current) {
+      setTriggerRect(triggerRef.current.getBoundingClientRect());
+    }
+  }, [open]);
+
+   React.useEffect(() => {
+    if (!open) return;
+
+    const handleOutside = (e) => {
+      if (
+        dropdownRef.current?.contains(e.target) ||
+        triggerRef.current?.contains(e.target)
+      ) {
+        return;
+      }
+      setOpen(false);
+    };
+
+    document.addEventListener("pointerdown", handleOutside);
+    return () => document.removeEventListener("pointerdown", handleOutside);
+  }, [open]);
+
 
   return (
     <div className="relative">
       {/* Trigger */}
       <button
+        ref={triggerRef}
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-700"
       >
@@ -15,13 +43,18 @@ const HeaderCheckboxDropdown = ({ label, options, align = "left" }) => {
       </button>
 
       {/* Dropdown */}
-      {open && (
+      {open && triggerRect && (
         <div
-          className={`absolute z-50 mt-2 w-56 rounded-md border border-gray-200 bg-white shadow-lg ${
-            align === "right" ? "right-0" : "left-0"
-          }`}
+          ref={dropdownRef}
+          className="fixed z-[999] mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-56"
+          style={{
+            top: triggerRect.bottom + 6,
+            left: triggerRect.left,
+          }}
         >
-          <div className="p-2 space-y-2">
+          <div className="max-h-40 overflow-y-auto overscroll-contain py-2"
+          style={{ scrollbarGutter: "stable" }}
+          >
             {options.map((opt) => (
               <label
                 key={opt}
