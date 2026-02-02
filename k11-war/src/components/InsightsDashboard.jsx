@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, Calendar } from "../design-system/components";
+import DateRangePicker from "../design-system/components/DateRangePicker";
 import { cn } from "../design-system/utils/utils";
 import InfoCard from "./InfoCard";
 import ChartCard from "./ChartCard";
 import SitesTable from "./SitesTable";
 import { SimpleLineChart } from "./SimpleLineChart";
-import { CAPACITY_SERIES, VOLTAGE_INSIGHTS_SERIES } from "../utils/chartUtils";
+import { CAPACITY_SERIES, VOLTAGE_INSIGHTS_SERIES, SITE_DYNAMIC_HOSTING_CAPACITY_SERIES, SITE_EV_CHARGER_SERIES, SITE_POWER_VMAX_SERIES, SITE_VMAX_SERIES, SITE_DISAGGREGATION_SERIES } from "../utils/chartUtils";
 import { set } from "date-fns";
 
 const TimeRangeTabs = ({ options }) => {
@@ -39,28 +40,12 @@ const ExpandedChartDialog = ({
   series,
   xLabel,
   yLabel,
-  chartDate,
-  onDateChange,
+  startDate,
+  endDate,
+  onStartDateChange,
+  onEndDateChange,
 }) => {
   const [zoom, setZoom] = React.useState(1);
-  const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
-  const calendarRef = React.useRef(null);
-  const popoverRef = React.useRef(null);
-
-  React.useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        popoverRef.current &&
-        !popoverRef.current.contains(event.target) &&
-        calendarRef.current &&
-        !calendarRef.current.contains(event.target)
-      ) {
-        setIsCalendarOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const handleZoomIn = () => {
     setZoom((prev) => Math.min(prev + 0.5, 4));
@@ -75,23 +60,29 @@ const ExpandedChartDialog = ({
   };
 
   const handlePrevDay = () => {
-    if (chartDate && onDateChange) {
-      const newDate = new Date(chartDate);
-      newDate.setDate(newDate.getDate() - 1);
-      onDateChange(newDate);
+    if (startDate && onStartDateChange && onEndDateChange) {
+      const newStartDate = new Date(startDate);
+      newStartDate.setDate(newStartDate.getDate() - 1);
+      const newEndDate = new Date(endDate);
+      newEndDate.setDate(newEndDate.getDate() - 1);
+      onStartDateChange(newStartDate);
+      onEndDateChange(newEndDate);
     }
   };
 
   const handleNextDay = () => {
-    if (chartDate && onDateChange) {
-      const newDate = new Date(chartDate);
-      newDate.setDate(newDate.getDate() + 1);
-      onDateChange(newDate);
+    if (startDate && onStartDateChange && onEndDateChange) {
+      const newStartDate = new Date(startDate);
+      newStartDate.setDate(newStartDate.getDate() + 1);
+      const newEndDate = new Date(endDate);
+      newEndDate.setDate(newEndDate.getDate() + 1);
+      onStartDateChange(newStartDate);
+      onEndDateChange(newEndDate);
     }
   };
 
-  const formatMonthDay = (date) => {
-    if (!date) return "Jan 22";
+  const formatMonthDayRange = () => {
+    if (!startDate || !endDate) return "Select range";
     const monthNames = [
       "Jan",
       "Feb",
@@ -106,15 +97,9 @@ const ExpandedChartDialog = ({
       "Nov",
       "Dec",
     ];
-    return `${monthNames[date.getMonth()]} ${date.getDate()}`;
-  };
-
-  const formatDate = (date) => {
-    if (!date) return "22/01/2026";
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+    const startStr = `${monthNames[startDate.getMonth()]} ${startDate.getDate()}`;
+    const endStr = `${monthNames[endDate.getMonth()]} ${endDate.getDate()}`;
+    return `${startStr} - ${endStr}`;
   };
 
   const handleDownload = () => {
@@ -139,7 +124,7 @@ const ExpandedChartDialog = ({
               <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-start sm:justify-end">
                 
                 {/* Date Navigation */}
-                {chartDate && onDateChange && (
+                {startDate && endDate && onStartDateChange && onEndDateChange && (
                   <div className="flex items-center gap-2">
                     <button
                       onClick={handlePrevDay}
@@ -158,8 +143,8 @@ const ExpandedChartDialog = ({
                         <path d="M15 19l-7-7 7-7"></path>
                       </svg>
                     </button>
-                    <span className="text-sm font-medium text-gray-700 min-w-[60px] text-center">
-                      {formatMonthDay(chartDate)}
+                    <span className="text-sm font-medium text-gray-700 min-w-max text-center">
+                      {formatMonthDayRange()}
                     </span>
                     <button
                       onClick={handleNextDay}
@@ -190,47 +175,14 @@ const ExpandedChartDialog = ({
 
                 {/* Utility Icons */}
                 <div className="flex items-center gap-2">
-                  {/* Calendar Icon */}
-                  {chartDate && onDateChange && (
-                    <div className="relative" ref={calendarRef}>
-                      <button
-                        onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-                        className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
-                        aria-label="Pick a date"
-                        title="Pick a date"
-                      >
-                        <svg
-                          className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                          <line x1="16" y1="2" x2="16" y2="6"></line>
-                          <line x1="8" y1="2" x2="8" y2="6"></line>
-                          <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                      </button>
-                      {isCalendarOpen && (
-                        <div
-                          ref={popoverRef}
-                          className="absolute right-0 top-full mt-2 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-3"
-                        >
-                          <Calendar
-                            selected={chartDate}
-                            onSelect={(selectedDate) => {
-                              if (selectedDate) {
-                                onDateChange(selectedDate);
-                                setIsCalendarOpen(false);
-                              }
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
+                  {/* Date Range Picker */}
+                  {startDate && endDate && onStartDateChange && onEndDateChange && (
+                    <DateRangePicker
+                      startDate={startDate}
+                      endDate={endDate}
+                      onStartDateChange={onStartDateChange}
+                      onEndDateChange={onEndDateChange}
+                    />
                   )}
 
                   {/* Refresh Icon */}
@@ -405,8 +357,10 @@ const InsightsDashboard = () => {
   // DT View States
   const [capacityExpanded, setCapacityExpanded] = useState(false);
   const [voltageExpanded, setVoltageExpanded] = useState(false);
-  const [capacityDate, setCapacityDate] = useState(new Date("2026-01-22"));
-  const [voltageDate, setVoltageDate] = useState(new Date("2026-01-22"));
+  const [capacityStartDate, setCapacityStartDate] = useState(new Date("2026-01-15"));
+  const [capacityEndDate, setCapacityEndDate] = useState(new Date("2026-01-22"));
+  const [voltageStartDate, setVoltageStartDate] = useState(new Date("2026-01-15"));
+  const [voltageEndDate, setVoltageEndDate] = useState(new Date("2026-01-22"));
   
   // Site View States
   const [siteDynamicHostingCapacityExpanded, setSiteDynamicHostingCapacityExpanded] = useState(false);
@@ -415,11 +369,16 @@ const InsightsDashboard = () => {
   const [siteVmax, setSiteVmax] = useState(false);
   const [siteDisaggregation, setSiteDisaggregation] = useState(false);
   
-  const [siteDynamicHostingCapacityDate, setSiteDynamicHostingCapacityDate] = useState(new Date("2026-01-22"));
-  const [siteEVChargerDate, setSiteEVChargerDate] = useState(new Date("2026-01-22"));
-  const [sitePowerVmaxDate, setSitePowerVmaxDate] = useState(new Date("2026-01-22"));
-  const [siteVmaxDate, setSiteVmaxDate] = useState(new Date("2026-01-22"));
-  const [siteDisaggregationDate, setSiteDisaggregationDate] = useState(new Date("2026-01-22"));
+  const [siteDynamicHostingCapacityStartDate, setSiteDynamicHostingCapacityStartDate] = useState(new Date("2026-01-15"));
+  const [siteDynamicHostingCapacityEndDate, setSiteDynamicHostingCapacityEndDate] = useState(new Date("2026-01-22"));
+  const [siteEVChargerStartDate, setSiteEVChargerStartDate] = useState(new Date("2026-01-15"));
+  const [siteEVChargerEndDate, setSiteEVChargerEndDate] = useState(new Date("2026-01-22"));
+  const [sitePowerVmaxStartDate, setSitePowerVmaxStartDate] = useState(new Date("2026-01-15"));
+  const [sitePowerVmaxEndDate, setSitePowerVmaxEndDate] = useState(new Date("2026-01-22"));
+  const [siteVmaxStartDate, setSiteVmaxStartDate] = useState(new Date("2026-01-15"));
+  const [siteVmaxEndDate, setSiteVmaxEndDate] = useState(new Date("2026-01-22"));
+  const [siteDisaggregationStartDate, setSiteDisaggregationStartDate] = useState(new Date("2026-01-15"));
+  const [siteDisaggregationEndDate, setSiteDisaggregationEndDate] = useState(new Date("2026-01-22"));
   
   
   const dtInfo = {
@@ -672,8 +631,10 @@ const InsightsDashboard = () => {
               series={CAPACITY_SERIES}
               xLabel="Time"
               yLabel="Capacity (kW/kVA)"
-              chartDate={capacityDate}
-              onDateChange={setCapacityDate}
+              startDate={capacityStartDate}
+              endDate={capacityEndDate}
+              onStartDateChange={setCapacityStartDate}
+              onEndDateChange={setCapacityEndDate}
             />
 
             <ExpandedChartDialog
@@ -689,8 +650,10 @@ const InsightsDashboard = () => {
               series={VOLTAGE_INSIGHTS_SERIES}
               xLabel="Time"
               yLabel="Voltage (V)"
-              chartDate={voltageDate}
-              onDateChange={setVoltageDate}
+              startDate={voltageStartDate}
+              endDate={voltageEndDate}
+              onStartDateChange={setVoltageStartDate}
+              onEndDateChange={setVoltageEndDate}
             />
 
             {/* Sites Table */}
@@ -790,7 +753,7 @@ const InsightsDashboard = () => {
                   // { label: "kVA", color: "#66BB6A" },
                 ]}
                 onExpand={() => setSiteDynamicHostingCapacityExpanded(true)}
-                series={CAPACITY_SERIES}
+                series={SITE_DYNAMIC_HOSTING_CAPACITY_SERIES}
               />
               <ChartCard
                 title="EV charger"
@@ -801,7 +764,7 @@ const InsightsDashboard = () => {
                 ]}
                 legend={[{ label: "Charging state ", color: "#66BB6A" }]}
                 onExpand={() => setSiteEVChargerExpanded(true)}
-                series={VOLTAGE_INSIGHTS_SERIES}
+                series={SITE_EV_CHARGER_SERIES}
               />
               <ChartCard
                 title="Power @ Vmax"
@@ -815,7 +778,7 @@ const InsightsDashboard = () => {
                   { label: "Reactive Power", color: "#66BB6A" },
                 ]}
                 onExpand={() => setSitePowerVmax(true)}
-                series={CAPACITY_SERIES}
+                series={SITE_POWER_VMAX_SERIES}
               />
               <ChartCard
                 title="Vmax"
@@ -829,7 +792,7 @@ const InsightsDashboard = () => {
                   { label: "Voltage(LL)", color: "#66BB6A" },
                 ]}
                 onExpand={() => setSiteVmax(true)}
-                series={CAPACITY_SERIES}
+                series={SITE_VMAX_SERIES}
               />
               
             </div>
@@ -847,7 +810,7 @@ const InsightsDashboard = () => {
                   { label: "Export", color: "#a78bfa" },
                 ]}
                 onExpand={() => setSiteDisaggregation(true)}
-                series={CAPACITY_SERIES}
+                series={SITE_DISAGGREGATION_SERIES}
               />
 
 
@@ -869,11 +832,13 @@ const InsightsDashboard = () => {
               legend={[
                 { label: "Hosting capacity", color: "#0040C1" },
               ]}
-              series={CAPACITY_SERIES}
+              series={SITE_DYNAMIC_HOSTING_CAPACITY_SERIES}
               xLabel="Time"
               yLabel="Hosting Capacity (kW)"
-              chartDate={siteDynamicHostingCapacityDate}
-              onDateChange={setSiteDynamicHostingCapacityDate}
+              startDate={siteDynamicHostingCapacityStartDate}
+              endDate={siteDynamicHostingCapacityEndDate}
+              onStartDateChange={setSiteDynamicHostingCapacityStartDate}
+              onEndDateChange={setSiteDynamicHostingCapacityEndDate}
             />
 
               {/* expanded chart for EV charger */}
@@ -887,11 +852,13 @@ const InsightsDashboard = () => {
                 { label: "Last Month", value: "month" },
               ]}
               legend={[{ label: "Charging state ", color: "#66BB6A" }]}
-              series={VOLTAGE_INSIGHTS_SERIES}
+              series={SITE_EV_CHARGER_SERIES}
               xLabel="Time"
               yLabel="Voltage (V)"
-              chartDate={siteEVChargerDate}
-              onDateChange={setSiteEVChargerDate}
+              startDate={siteEVChargerStartDate}
+              endDate={siteEVChargerEndDate}
+              onStartDateChange={setSiteEVChargerStartDate}
+              onEndDateChange={setSiteEVChargerEndDate}
             />
 
             {/* Expandede chart for power @ Vmax */}
@@ -908,11 +875,11 @@ const InsightsDashboard = () => {
                 { label: "Active Power", color: "#0040C1" },
                 { label: "Reactive Power", color: "#66BB6A" },
               ]}
-              series={CAPACITY_SERIES}
-              xLabel="Time"
-              yLabel="Capacity (kW/kVA)"
-              chartDate={sitePowerVmaxDate}
-              onDateChange={setSitePowerVmaxDate}
+              series={SITE_POWER_VMAX_SERIES}
+              startDate={sitePowerVmaxStartDate}
+              endDate={sitePowerVmaxEndDate}
+              onStartDateChange={setSitePowerVmaxStartDate}
+              onEndDateChange={setSitePowerVmaxEndDate}
             />
 
             {/* Expanded chart for Vmax */}
@@ -929,11 +896,13 @@ const InsightsDashboard = () => {
               
                 { label: "Voltage(LL)", color: "#66BB6A" },
               ]}
-              series={CAPACITY_SERIES}
+              series={SITE_VMAX_SERIES}
               xLabel="Time"
               yLabel="Capacity (kW/kVA)"
-              chartDate={siteVmaxDate}
-              onDateChange={setSiteVmaxDate}
+              startDate={siteVmaxStartDate}
+              endDate={siteVmaxEndDate}
+              onStartDateChange={setSiteVmaxStartDate}
+              onEndDateChange={setSiteVmaxEndDate}
             />
 
             {/* expanded chart for disaggregation summary */}
@@ -952,11 +921,13 @@ const InsightsDashboard = () => {
                 { label: "Import", color: "#673AB7" },
                 { label: "Export", color: "#a78bfa" },
               ]}
-              series={CAPACITY_SERIES}
+              series={SITE_DISAGGREGATION_SERIES}
               // xLabel="Time"
               yLabel="Kwh"
-              chartDate={siteDisaggregationDate}
-              onDateChange={setSiteDisaggregationDate}
+              startDate={siteDisaggregationStartDate}
+              endDate={siteDisaggregationEndDate}
+              onStartDateChange={setSiteDisaggregationStartDate}
+              onEndDateChange={setSiteDisaggregationEndDate}
             />
 
           

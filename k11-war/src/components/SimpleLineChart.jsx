@@ -22,12 +22,18 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className })
   const yAxisMin = Math.max(0, minY - yRange * 0.05); // Add padding below, but don't go below 0
   const yAxisMax = maxY + yRange * 0.05; // 5% padding above
 
+  // Create color map for tooltip
+  const colorMap = {};
+  truncatedSeries.forEach((serie) => {
+    colorMap[serie.label] = serie.color;
+  });
+
   const option = {
     grid: {
-      left: "5%",
-      right: "5%",
-      top: "5%",
-      bottom: "5%",
+      left: "8%",
+      right: "8%",
+      top: "8%",
+      bottom: "8%",
       containLabel: false,
     },
     xAxis: {
@@ -38,8 +44,8 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className })
       axisLine: {
         show: true,
         lineStyle: {
-          color: "#d1d5db",
-          width: 1,
+          color: "#374151",
+          width: 2.5,
         },
       },
       axisTick: {
@@ -49,7 +55,11 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className })
         show: false,
       },
       splitLine: {
-        show: false,
+        show: true,
+        lineStyle: {
+          color: "#f3f4f6",
+          type: "solid",
+        },
       },
     },
     yAxis: {
@@ -61,8 +71,8 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className })
       axisLine: {
         show: true,
         lineStyle: {
-          color: "#d1d5db",
-          width: 1,
+          color: "#374151",
+          width: 2.5,
         },
       },
       axisTick: {
@@ -72,30 +82,88 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className })
         show: false,
       },
       splitLine: {
-        show: false,
+        show: true,
+        lineStyle: {
+          color: "#f3f4f6",
+          type: "solid",
+        },
       },
     },
     series: truncatedSeries.map((serie) => ({
       name: serie.label,
       type: "line",
       data: serie.data.map((p) => p.y),
-      smooth: false,
-      symbol: "none",
+      smooth: 0.3,
+      symbol: "circle",
+      symbolSize: 5,
+      itemStyle: {
+        color: serie.color,
+        borderColor: serie.color,
+        borderWidth: 2,
+      },
       lineStyle: {
         color: serie.color,
-        width: 1.2,
+        width: 2.5,
+        type: "dotted",
       },
       areaStyle: {
-        opacity: 0,
+        color: serie.color,
+        opacity: 0.08,
       },
     })),
-    tooltip: {
-      trigger: "axis",
-      axisPointer: {
-        type: "line",
-      },
+tooltip: {
+  trigger: "axis",
+  backgroundColor: "#ffffff",
+  borderColor: "#e5e7eb",
+  borderWidth: 1,
+  padding: 12,
+  extraCssText: 'box-shadow: 0 2px 8px rgba(0,0,0,0.1);',
+  textStyle: {
+    color: "#000000",
+    fontSize: 12,
+  },
+  axisPointer: {
+    type: "line",
+    lineStyle: {
+      color: "#d1d5db",
+      width: 1,
+      type: "dashed",
     },
-    animation: false,
+  },
+  formatter: (params) => {
+    if (!Array.isArray(params) || params.length === 0) return "";
+    
+    const dataIndex = params[0].dataIndex;
+    
+    const now = new Date();
+    const dataDate = new Date(now.getTime() - (100 - dataIndex) * 15 * 60000);
+    const dateStr = dataDate.toLocaleDateString('en-US', { 
+      day: 'numeric', 
+      month: 'short', 
+      year: 'numeric' 
+    }) + ', ' + dataDate.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: true 
+    });
+    
+    // Use Unicode circle character instead of HTML/CSS
+    let tooltip = dateStr + '<br/><br/>';
+    
+    params.forEach((item) => {
+      const seriesColor = truncatedSeries[item.seriesIndex]?.color || '#000';
+    // console.log(seriesColor);
+    // cant apply color for the dot due to CSP
+      tooltip += '<span class=>●</span> ' + item.seriesName + ': ' + item.value + '<br/>';
+    });
+    
+    tooltip += '<br/>Quality: 100%';
+    
+    return tooltip;
+  },
+},
+    animation: true,
+    animationDuration: 800,
   };
 
   return (
