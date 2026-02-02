@@ -273,6 +273,8 @@ const DatePickerButton = ({ date, onDateChange }) => {
 
   // Close on outside click
   React.useEffect(() => {
+    if (!isOpen) return;
+
     const handleClickOutside = (event) => {
       if (
         popoverRef.current &&
@@ -296,16 +298,27 @@ const DatePickerButton = ({ date, onDateChange }) => {
 
     const rect = dateRef.current.getBoundingClientRect();
     const calendarWidth = 280;
+    const GAP=8;
     const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
 
     let left = rect.left;
     if (left + calendarWidth > viewportWidth) {
-      left = viewportWidth - calendarWidth - 12;
+      left = viewportWidth - calendarWidth - GAP;
+    }
+    if (left < GAP) {
+      left = GAP;
     }
 
+    const maxHeight = Math.max(
+      200,
+      viewportHeight - rect.bottom - GAP
+    );
+
     setPopoverStyle({
-      top: rect.bottom + 8,
+      top: rect.bottom + GAP,
       left,
+      maxHeight: maxHeight,
     });
   }, []);
 
@@ -405,7 +418,7 @@ const DatePickerButton = ({ date, onDateChange }) => {
         {isOpen && (
           <div
             ref={popoverRef}
-            className="fixed z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-3"
+            className="fixed z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-3 overflow-y-auto"
             style={popoverStyle}
           >
             <Calendar

@@ -25,6 +25,7 @@ const AppContent = () => {
           isSidebarExpanded ? "ml-[150px]" : "ml-[5rem]"
         )}
       >
+      
         {activeNav === "monitor" ? (
           <MonitorDashboard onNavigateToInsights={() => setActiveNav("insights")} />
         ) : (
