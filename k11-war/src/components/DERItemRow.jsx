@@ -94,3 +94,5 @@ const DERItemRow = ({
     </div>
   );
 };
+
+export default DERItemRow;
