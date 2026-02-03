@@ -4,6 +4,11 @@ import HeaderCheckboxDropdown from "../components/HeaderChechboxDropdown";
 import { cn } from "../design-system/utils/utils";
 import { SimpleLineChart } from "./SimpleLineChart";
 import { POWER_SERIES, VOLTAGE_SERIES } from "../utils/chartUtils";
+import DERListCard from "./DERListCard";
+import DERItemRow from "./DERItemRow";
+import DERHeaderRow from "./DERHeaderRow";
+import WallboxIcon from "./icons/WallboxIcon";
+import SunnyBoyIcon from "./icons/SunnyBoyIcon";
 
 const IconCircle = ({ children }) => (
   <span className="
@@ -798,6 +803,7 @@ const MonitorDashboard = ({ onNavigateToInsights }) => {
             title="Site Details"
             rightContent={
               <Button
+                onClick={onNavigateToInsights}
                 variant="outline"
                 size="sm"
                 className="text-sm px-2 py-1 rounded-full font-medium border-[#155eef] bg-[#155eef] text-white"
@@ -977,16 +983,35 @@ const MonitorDashboard = ({ onNavigateToInsights }) => {
 
         {/* DERs summary row */}
         <SectionCard
-          title="DER's – (0)"
-          rightContent={
-            <div className="flex items-center gap-20 text-sm text-gray-700 font-medium">
-              <span className="font-bold whitespace-nowrap">Active Controls</span>
-              <span className="font-bold whitespace-nowrap">Site Default</span>
-            </div>
-          }
+          title="DER's – (2)"
         >
-          {/* Empty body – header-only card */}
-          <div className="h-6" />
+          <DERListCard>
+
+            <DERHeaderRow />
+            <DERItemRow
+              icon={<WallboxIcon className="w-5 h-5 text-gray-700"/>}
+              name="Wallbox"
+              status="Disconnected"
+              statusColor="red"
+              powerLeft="10.996 kW"
+              powerRight="0 kW"
+              flowText="Consuming"
+              controlType="Load Limiting"
+              siteDefault="70 kW"
+            />
+
+            <DERItemRow
+              icon={<SunnyBoyIcon className="w-5 h-5 text-gray-700"/>}
+              name="SunnyBoy"
+              status="Connected"
+              statusColor="green"
+              powerLeft="0 kW"
+              powerRight="6 kW"
+              controlType="Gen Limiting"
+              siteDefault="--"
+            />
+
+          </DERListCard>
         </SectionCard>
 
 
