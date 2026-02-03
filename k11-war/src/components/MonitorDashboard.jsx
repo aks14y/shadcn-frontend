@@ -1,28 +1,171 @@
 import React from "react";
 import { Card, Button, Calendar, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Dialog, DialogContent, DialogHeader, DialogTitle } from "../design-system/components";
+import HeaderCheckboxDropdown from "../components/HeaderChechboxDropdown";
 import { cn } from "../design-system/utils/utils";
 import { SimpleLineChart } from "./SimpleLineChart";
 import { POWER_SERIES, VOLTAGE_SERIES } from "../utils/chartUtils";
+
+const IconCircle = ({ children }) => (
+  <span className="
+    flex h-8 w-8 items-center justify-center
+    rounded-full border border-gray-200
+    text-gray-600 shrink-0
+  ">
+    {children}
+  </span>
+);
+
+const NameIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className="text-gray-700"
+  >
+    <g clipPath="url(#clip0)">
+      <path
+        d="M7.33301 3.00001H12.1997C12.9464 3.00001 13.3198 3.00001 13.605 3.14533C13.8559 3.27317 14.0599 3.47714 14.1877 3.72802C14.333 4.01324 14.333 4.38661 14.333 5.13334V6.00001C14.333 6.62127 14.333 6.93189 14.2315 7.17692C14.0962 7.50363 13.8366 7.76319 13.5099 7.89852C13.2649 8.00001 12.9543 8.00001 12.333 8.00001M8.66634 13H3.79967C3.05294 13 2.67957 13 2.39435 12.8547C2.14347 12.7269 1.9395 12.5229 1.81167 12.272C1.66634 11.9868 1.66634 11.6134 1.66634 10.8667V10C1.66634 9.37876 1.66634 9.06813 1.76784 8.8231C1.90316 8.4964 2.16273 8.23683 2.48943 8.1015C2.73446 8.00001 3.04509 8.00001 3.66634 8.00001M6.86634 9.66668H9.13301C9.31969 9.66668 9.41303 9.66668 9.48434 9.63035C9.54706 9.59839 9.59805 9.54739 9.63001 9.48467C9.66634 9.41337 9.66634 9.32003 9.66634 9.13334V6.86668C9.66634 6.67999 9.66634 6.58665 9.63001 6.51535C9.59805 6.45263 9.54706 6.40163 9.48434 6.36967C9.41303 6.33334 9.31969 6.33334 9.13301 6.33334H6.86634C6.67966 6.33334 6.58631 6.33334 6.51501 6.36967C6.45229 6.40163 6.4013 6.45263 6.36934 6.51535C6.33301 6.58665 6.33301 6.67999 6.33301 6.86668V9.13334C6.33301 9.32003 6.33301 9.41337 6.36934 9.48467C6.4013 9.54739 6.45229 9.59839 6.51501 9.63035C6.58631 9.66668 6.67966 9.66668 6.86634 9.66668ZM11.8663 14.6667H14.133C14.3197 14.6667 14.413 14.6667 14.4843 14.6303C14.5471 14.5984 14.5981 14.5474 14.63 14.4847C14.6663 14.4134 14.6663 14.32 14.6663 14.1333V11.8667C14.6663 11.68 14.6663 11.5867 14.63 11.5153C14.5981 11.4526 14.5471 11.4016 14.4843 11.3697C14.413 11.3333 14.3197 11.3333 14.133 11.3333H11.8663C11.6797 11.3333 11.5863 11.3333 11.515 11.3697C11.4523 11.4016 11.4013 11.4526 11.3693 11.5153C11.333 11.5867 11.333 11.68 11.333 11.8667V14.1333C11.333 14.32 11.333 14.4134 11.3693 14.4847C11.4013 14.5474 11.4523 14.5984 11.515 14.6303C11.5863 14.6667 11.6797 14.6667 11.8663 14.6667ZM1.86634 4.66668H4.13301C4.31969 4.66668 4.41303 4.66668 4.48434 4.63035C4.54706 4.59839 4.59805 4.54739 4.63001 4.48467C4.66634 4.41337 4.66634 4.32003 4.66634 4.13334V1.86668C4.66634 1.67999 4.66634 1.58665 4.63001 1.51535C4.59805 1.45263 4.54706 1.40163 4.48434 1.36967C4.41303 1.33334 4.31969 1.33334 4.13301 1.33334H1.86634C1.67966 1.33334 1.58631 1.33334 1.51501 1.36967C1.45229 1.40163 1.4013 1.45263 1.36934 1.51535C1.33301 1.58665 1.33301 1.67999 1.33301 1.86668V4.13334C1.33301 4.32003 1.33301 4.41337 1.36934 4.48467C1.4013 4.54739 1.45229 4.59839 1.51501 4.63035C1.58631 4.66668 1.67966 4.66668 1.86634 4.66668Z"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+    <defs>
+      <clipPath id="clip0">
+        <rect width="16" height="16" fill="white" />
+      </clipPath>
+    </defs>
+  </svg>
+);
+
+
+const TypeIcon = () => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width="16" height="16" 
+    viewBox="0 0 24 24" fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round">
+      <path d="M14 7H16C18.7614 7 21 9.23858 21 12C21 14.7614 18.7614 17 16 17H14M10 7H8C5.23858 7 3 9.23858 3 12C3 14.7614 5.23858 17 8 17H10M8 12H16" />
+  </svg>
+);
+
+const LocationIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M21 10c0 6-9 13-9 13S3 16 3 10a9 9 0 1118 0z" />
+    <circle cx="12" cy="10" r="3" />
+  </svg>
+);
+
+const NetworkIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 3v18" />
+    <path d="M6 8h12" />
+    <path d="M6 16h12" />
+  </svg>
+);
+
+const PowerIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="12" r="9" />
+  </svg>
+);
+
+const EvIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="5" y="3" width="14" height="14" rx="2" />
+    <path d="M9 21v-4h6v4" />
+    <path d="M9 7h6" />
+  </svg>
+);
+
+
+const SiteDetailRow = ({ icon, label, value }) => (
+  <div className="flex items-center gap-2 rounded-full border border-gray-200 pl-0 py-0 text-sm">
+    <IconCircle>{icon}</IconCircle>
+
+    <span className="text-gray-500 whitespace-nowrap">
+      {label + ":"}
+    </span>
+
+    <span className="font-medium text-gray-900 truncate max-w-[45%]">
+      {value}
+    </span>
+  </div>
+);
+
 
 const TimeRangeTabs = ({ options }) => {
   const [active, setActive] = React.useState(options[0]?.value || "");
 
   return (
-    <div className="inline-flex rounded-full bg-[#f5f5ff] p-1 text-sm font-medium">
-      {options.map((opt) => (
-        <button
-          key={opt.value}
-          onClick={() => setActive(opt.value)}
-          className={cn(
-            "px-4 py-1.5 rounded-full transition-colors",
-            active === opt.value
-              ? "bg-[#155eef] text-white"
-              : "text-[#155eef]"
-          )}
-        >
-          {opt.label}
-        </button>
-      ))}
+    <div
+      className="
+        flex items-center overflow-hidden
+        rounded-full border border-[#155eef]-500
+        bg-white max-w-full
+        text-xs sm:text-sm font-medium
+      "
+    > 
+      {options.map((opt) => {
+        const isActive = active === opt.value;
+
+        return (
+          <button
+            key={opt.value}
+            onClick={() => setActive(opt.value)}
+            className={cn(
+              "px-2 py-1 sm:px-3 py-1.5 transition-colors whitespace-nowrap",
+              "focus:outline-none",
+              isActive
+                ? "bg-[#155eef] text-white"
+                : "text-[#155eef] hover:bg-[#eef3ff]"
+            )}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
     </div>
   );
 };
@@ -45,8 +188,9 @@ const EmptyChart = ({ legend, className, series, xLabel, yLabel }) => {
   if (series && series.length > 0) {
     return (
       <div className={cn("flex flex-col", className || "h-80")}>
-        <div className="flex-1 border-b border-gray-200 p-6 min-h-0 rounded-lg bg-white">
-          <SimpleLineChart series={series} xLabel={xLabel} yLabel={yLabel} />
+        <div className="flex-1 border-b border-gray-200 p-6 min-h-0 rounded-lg bg-white w-full h-full min-w-0 overflow-hidden">
+          <SimpleLineChart className="w-full h-full"
+          series={series} xLabel={xLabel} yLabel={yLabel} />
         </div>
         {legend && legend.length > 0 && (
           <div className="flex items-center gap-6 pt-6 pb-2 text-sm text-gray-600">
@@ -85,16 +229,17 @@ const EmptyChart = ({ legend, className, series, xLabel, yLabel }) => {
 
 
 const SectionCard = ({ title, rightContent, children, onExpand }) => (
-  <Card className="w-full">
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
-        <div className="flex items-center gap-3">
+  <Card className="w-full h-full px:0 py:0 overflow-hidden rounded-xl
+                  shadow-[0_1px_2px_rgba(16,24,40,0.04),0_4px_8px_rgba(16,24,40,0.08)]">
+    <div className="px-2 py-1 h-full flex flex-col min-w-0">
+      <div className="flex items-start justify-between gap-2 mb-2 min-w-0 shrink-0">
+        <h3 className="text-base sm:text-base font-bold text-gray-900 break-words truncate">{title}</h3>
+        <div className="flex items-center gap-2 flex-shrink-0">
           {rightContent}
           {onExpand && (
             <button
               onClick={onExpand}
-              className="p-2 rounded hover:bg-gray-100 transition-colors"
+              className="p-1 rounded hover:bg-gray-100 transition-colors"
               aria-label="Expand chart"
             >
               <svg
@@ -112,17 +257,24 @@ const SectionCard = ({ title, rightContent, children, onExpand }) => (
           )}
         </div>
       </div>
-      {children}
+      <div className="flex-1 min-w-0 overflow-hidden">
+        {children}
+      </div>
     </div>
   </Card>
 );
 
+
 const DatePickerButton = ({ date, onDateChange }) => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [popoverStyle, setPopoverStyle] = React.useState({});
   const dateRef = React.useRef(null);
   const popoverRef = React.useRef(null);
 
+  // Close on outside click
   React.useEffect(() => {
+    if (!isOpen) return;
+
     const handleClickOutside = (event) => {
       if (
         popoverRef.current &&
@@ -140,6 +292,51 @@ const DatePickerButton = ({ date, onDateChange }) => {
     }
   }, [isOpen]);
 
+  // Update calendar position
+  const updatePopoverPosition = React.useCallback(() => {
+    if (!dateRef.current) return;
+
+    const rect = dateRef.current.getBoundingClientRect();
+    const calendarWidth = 280;
+    const GAP=8;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let left = rect.left;
+    if (left + calendarWidth > viewportWidth) {
+      left = viewportWidth - calendarWidth - GAP;
+    }
+    if (left < GAP) {
+      left = GAP;
+    }
+
+    const maxHeight = Math.max(
+      200,
+      viewportHeight - rect.bottom - GAP
+    );
+
+    setPopoverStyle({
+      top: rect.bottom + GAP,
+      left,
+      maxHeight: maxHeight,
+    });
+  }, []);
+
+  // Recalculate on open, scroll, resize
+  React.useEffect(() => {
+    if (!isOpen) return;
+
+    updatePopoverPosition();
+
+    window.addEventListener("scroll", updatePopoverPosition, true);
+    window.addEventListener("resize", updatePopoverPosition);
+
+    return () => {
+      window.removeEventListener("scroll", updatePopoverPosition, true);
+      window.removeEventListener("resize", updatePopoverPosition);
+    };
+  }, [isOpen, updatePopoverPosition]);
+
   const formatDate = (date) => {
     if (!date) return "20/01/2026";
     const day = String(date.getDate()).padStart(2, "0");
@@ -150,10 +347,7 @@ const DatePickerButton = ({ date, onDateChange }) => {
 
   const formatMonthDay = (date) => {
     if (!date) return "Jan 20";
-    const monthNames = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-    ];
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     return `${monthNames[date.getMonth()]} ${date.getDate()}`;
   };
 
@@ -172,86 +366,78 @@ const DatePickerButton = ({ date, onDateChange }) => {
   return (
     <div className="relative">
       <div className="flex items-center gap-4 text-sm text-gray-700">
-        <button
-          onClick={handlePreviousDay}
-          className="p-1.5 rounded hover:bg-gray-100"
-          aria-label="Previous day"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path d="M15 19l-7-7 7-7"></path>
-          </svg>
+        <button onClick={handlePreviousDay} className="p-1.5 rounded hover:bg-gray-100">
+          ←
         </button>
+
         <span>{formatMonthDay(date || new Date("2026-01-20"))}</span>
+
+        <button onClick={handleNextDay} className="p-1.5 rounded hover:bg-gray-100">
+          →
+        </button>
+
+        {/* Date picker */}
         <button
-          onClick={handleNextDay}
-          className="p-1.5 rounded hover:bg-gray-100"
-          aria-label="Next day"
+          ref={dateRef}
+          onClick={() => setIsOpen((v) => !v)}
+          className="
+            relative
+            w-[180px]
+            border border-gray-500
+            rounded-md
+            px-3
+            pt-5
+            pb-2
+            text-sm
+            text-left
+            hover:bg-gray-50
+          "
         >
+          <span className="absolute top-1 left-3 text-xs text-gray-500">
+            Pick a date
+          </span>
+
+          <span className="block text-gray-900">
+            {formatDate(date || new Date("2026-01-20"))}
+          </span>
+
           <svg
-            className="w-5 h-5"
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"
             fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
             strokeWidth="2"
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path d="M9 5l7 7-7 7"></path>
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
           </svg>
         </button>
-        <div className="relative">
-          <button
-            ref={dateRef}
-            onClick={() => setIsOpen(!isOpen)}
-            className="flex items-center gap-2 border border-gray-300 rounded px-3 py-1.5 text-sm hover:bg-gray-50 transition-colors"
+
+        {isOpen && (
+          <div
+            ref={popoverRef}
+            className="fixed z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-3 overflow-y-auto"
+            style={popoverStyle}
           >
-            <span className="text-gray-500">Pick a date</span>
-            <span>{formatDate(date || new Date("2026-01-20"))}</span>
-            <svg
-              className="w-4 h-4 text-gray-400"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-          </button>
-          {isOpen && (
-            <div
-              ref={popoverRef}
-              className="absolute right-0 top-full mt-2 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-3"
-            >
-              <Calendar
-                selected={date || new Date("2026-01-20")}
-                onSelect={(selectedDate) => {
-                  if (selectedDate) {
-                    onDateChange(selectedDate);
-                    setIsOpen(false);
-                  }
-                }}
-                mode="single"
-              />
-            </div>
-          )}
-        </div>
+            <Calendar
+              selected={date || new Date("2026-01-20")}
+              onSelect={(selectedDate) => {
+                if (selectedDate) {
+                  onDateChange(selectedDate);
+                  setIsOpen(false);
+                }
+              }}
+              mode="single"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
 };
+
 
 const ExpandedChartDialog = ({
   open,
@@ -334,14 +520,14 @@ const ExpandedChartDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-7xl w-[95vw] h-[90vh] max-h-[90vh] flex flex-col p-4">
-        <DialogHeader className="pb-3 flex-shrink-0">
+        <DialogHeader className="pb-3 px-5">
           <div className="flex flex-col gap-3 p-2">
-            <div className="flex items-center justify-between w-full">
-              <DialogTitle className="text-2xl font-semibold">{title}</DialogTitle>
-              <div className="flex items-center gap-4">
+            <div className="flex items-center justify-between gap-4 w-full min-w-0">
+              <DialogTitle className="text-xl font-semibold whitespace-nowrap">{title}</DialogTitle>
+              <div className="flex items-center gap-3 min-w-0">
                 {/* Date Navigation */}
                 {chartDate && onDateChange && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 text-sm whitespace-nowrap">
                     <button
                       onClick={handlePrevDay}
                       className="p-1.5 rounded hover:bg-gray-100 transition-colors"
@@ -383,7 +569,12 @@ const ExpandedChartDialog = ({
                 )}
                 
                 {/* Time Range Tabs */}
-                {timeRangeOptions && <TimeRangeTabs options={timeRangeOptions} />}
+                {/* {timeRangeOptions && <TimeRangeTabs options={timeRangeOptions} />} */}
+                {timeRangeOptions && (
+                  <div className="hidden sm:flex">
+                    <TimeRangeTabs options={timeRangeOptions} />
+                  </div>
+                )}
                 
                 {/* Utility Icons */}
                 <div className="flex items-center gap-2">
@@ -555,7 +746,7 @@ const ExpandedChartDialog = ({
         </DialogHeader>
         <div className="flex-1 overflow-hidden flex flex-col min-h-0">
           <div className="flex-1 w-full border border-gray-200 rounded bg-white p-4 min-h-0 flex flex-col" style={{ minHeight: 0 }}>
-            <div className="flex-1 min-h-0 w-full">
+            <div className="w-full h-full min-w-0 min-h-0 overflow-hidden">
               <SimpleLineChart series={series} zoom={zoom} xLabel={xLabel} yLabel={yLabel} className="w-full h-full" />
             </div>
           </div>
@@ -599,47 +790,61 @@ const MonitorDashboard = ({ onNavigateToInsights }) => {
           </h1>
         </div>
 
-        {/* Top row cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 min-w-0">
+
+          {/* ───────────── TOP 4 CARDS ───────────── */}
+
           <SectionCard
             title="Site Details"
             rightContent={
               <Button
                 variant="outline"
                 size="sm"
-                className="text-sm px-4 py-1.5 rounded-full border-[#155eef] text-[#155eef]"
+                className="text-sm px-2 py-1 rounded-full font-medium border-[#155eef] bg-[#155eef] text-white"
               >
                 Switch Site
               </Button>
             }
-          />
+          >
+            <div className="space-y-2">
+              <SiteDetailRow icon={<NameIcon />} label="Name" value="cfvg" />
+              <SiteDetailRow icon={<TypeIcon />} label="Type" value="N/A" />
+              <SiteDetailRow icon={<LocationIcon />} label="Location" value="N/A" />
+              <SiteDetailRow icon={<LocationIcon />} label="DER Type" value="N/A" />
+            </div>
+          </SectionCard>
+
           <SectionCard title="Generation Capacity">
-            <div className="flex items-center justify-between text-sm text-gray-600">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-6 h-full">
               <div>
-                <div className="text-sm uppercase tracking-wide text-gray-500">
-                  Total
-                </div>
-                <div className="mt-1 text-2xl font-semibold text-gray-900">
-                  0 kW
-                </div>
+                <div className="text-[11px] uppercase text-gray-500">Total</div>
+                <div className="text-xl font-semibold">0 kW</div>
               </div>
-              <div className="space-y-2 text-sm">
-                <div>
-                  <span className="inline-block w-3 h-3 rounded-full bg-[#155eef] mr-2" />
+              <div className="space-y-1 text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#155eef]" />
+                  Energised 0 kW
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#60a5fa]" />
+                  De-energised 0 kW
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#22c55e]" />
                   Reserved 0 kW
-                </div>
-                <div>
-                  <span className="inline-block w-3 h-3 rounded-full bg-[#22c55e] mr-2" />
-                  Running 0 kW
-                </div>
-                <div>
-                  <span className="inline-block w-3 h-3 rounded-full bg-[#60a5fa] mr-2" />
-                  Offline 0 kW
                 </div>
               </div>
             </div>
           </SectionCard>
-          <SectionCard title="Network" />
+
+          <SectionCard title="Network">
+            <SiteDetailRow
+              icon={<LocationIcon />}
+              label="Phase Connected"
+              value="Phase B"
+            />
+          </SectionCard>
+
           <SectionCard
             title="Insights"
             rightContent={
@@ -657,64 +862,74 @@ const MonitorDashboard = ({ onNavigateToInsights }) => {
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path d="M9 5l7 7-7 7"></path>
+                  <path d="M9 5l7 7-7 7" />
                 </svg>
               </button>
             }
-          />
-        </div>
-
-        {/* Power + Voltage row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <SectionCard
-            title="Power"
-            rightContent={
-              <TimeRangeTabs
-                options={[
-                  { label: "Today", value: "today" },
-                  { label: "Last Week", value: "week" },
-                  { label: "Last Month", value: "month" },
-                ]}
-              />
-            }
-            onExpand={() => setPowerExpanded(true)}
           >
-            <EmptyChart
-              legend={[
-                { label: "Phase A", color: "#111827" },
-                { label: "Phase B", color: "#ef4444" },
-                { label: "Phase C", color: "#3b82f6" },
-              ]}
-              series={POWER_SERIES}
-              xLabel="Time"
-              yLabel="Power (kW)"
-            />
+            <div className="space-y-2">
+              <SiteDetailRow icon={<PowerIcon />} label="DHCI Max" value="0.0 kVA" />
+              <SiteDetailRow icon={<PowerIcon />} label="DHCI Min" value="0.0 kVA" />
+              <SiteDetailRow icon={<EvIcon />} label="EV Charge Events" value="N/A" />
+            </div>
           </SectionCard>
 
-          <SectionCard
-            title="Voltage Profile"
-            rightContent={
-              <TimeRangeTabs
-                options={[
-                  { label: "Today", value: "today" },
-                  { label: "Last Week", value: "week" },
-                  { label: "Last Month", value: "month" },
+          {/* ───────────── POWER (SPANS 2 COLS) ───────────── */}
+          <div className="col-span-full xl:col-span-2">
+            <SectionCard
+              title="Power"
+              rightContent={
+                <TimeRangeTabs
+                  options={[
+                    { label: "Today", value: "today" },
+                    { label: "Last Week", value: "week" },
+                    { label: "Last Month", value: "month" },
+                  ]}
+                />
+              }
+              onExpand={() => setPowerExpanded(true)}
+            >
+              <EmptyChart
+                legend={[
+                  { label: "Phase A", color: "#111827" },
+                  { label: "Phase B", color: "#ef4444" },
+                  { label: "Phase C", color: "#3b82f6" },
                 ]}
+                series={POWER_SERIES}
+                xLabel="Time"
+                yLabel="Power (kW)"
               />
-            }
-            onExpand={() => setVoltageExpanded(true)}
-          >
-            <EmptyChart
-              legend={[
-                { label: "Voltage (AN)", color: "#111827" },
-                { label: "Voltage (BN)", color: "#ef4444" },
-                { label: "Voltage (CN)", color: "#3b82f6" },
-              ]}
-              series={VOLTAGE_SERIES}
-              xLabel="Time"
-              yLabel="Voltage (V)"
-            />
-          </SectionCard>
+            </SectionCard>
+          </div>
+
+          {/* ───────────── VOLTAGE (SPANS 2 COLS) ───────────── */}
+          <div className="col-span-full xl:col-span-2">
+            <SectionCard
+              title="Voltage Profile"
+              rightContent={
+                <TimeRangeTabs
+                  options={[
+                    { label: "Today", value: "today" },
+                    { label: "Last Week", value: "week" },
+                    { label: "Last Month", value: "month" },
+                  ]}
+                />
+              }
+              onExpand={() => setVoltageExpanded(true)}
+            >
+              <EmptyChart
+                legend={[
+                  { label: "Voltage (AN)", color: "#111827" },
+                  { label: "Voltage (BN)", color: "#ef4444" },
+                  { label: "Voltage (CN)", color: "#3b82f6" },
+                ]}
+                series={VOLTAGE_SERIES}
+                xLabel="Time"
+                yLabel="Voltage (V)"
+              />
+            </SectionCard>
+          </div>
+
         </div>
 
         {/* Expanded Chart Dialogs */}
@@ -764,14 +979,16 @@ const MonitorDashboard = ({ onNavigateToInsights }) => {
         <SectionCard
           title="DER's – (0)"
           rightContent={
-            <div className="flex items-center gap-8 text-sm text-gray-700">
-              <span>Active Controls</span>
-              <span>Site Default</span>
+            <div className="flex items-center gap-20 text-sm text-gray-700 font-medium">
+              <span className="font-bold whitespace-nowrap">Active Controls</span>
+              <span className="font-bold whitespace-nowrap">Site Default</span>
             </div>
           }
         >
-          <div className="h-10" />
+          {/* Empty body – header-only card */}
+          <div className="h-6" />
         </SectionCard>
+
 
         {/* DER Schedules */}
         <SectionCard
@@ -812,9 +1029,44 @@ const MonitorDashboard = ({ onNavigateToInsights }) => {
           }
         >
           <div className="mt-4 border-t border-gray-200" />
+
+          {/* Table Header */}
+          <div className="grid grid-cols-7 gap-4 px-4 py-3 text-xs font-medium text-gray-500">
+            <div>Sl No</div>
+            <div>DER</div>
+            <HeaderCheckboxDropdown
+              label="Function"
+              options={[
+                "Select All",
+                "Connect / Disconnect",
+                "Gen Limiting",
+                "Load Limiting",
+                "Target Watt",
+                "Volt-Var",
+              ]}
+            />
+            <div>Value</div>
+            <div>Start Time</div>
+            <div>End Time</div>
+            <HeaderCheckboxDropdown
+              label="Status"
+              align="right"
+              options={[
+                "Select All",
+                "Active",
+                "Scheduled"
+              ]}
+            />
+              
+          </div>
+
+          <div className="border-t border-gray-200" />
+
+          {/* Empty State */}
           <div className="py-10 text-center text-sm text-gray-500">
             No controls found for this date.
           </div>
+
         </SectionCard>
       </div>
     </div>
