@@ -179,7 +179,7 @@ tooltip: {
       tooltip += '<span class=>●</span> ' + item.seriesName + ': ' + item.value + '<br/>';
     });
     
-    tooltip += '<br/>Quality: 100%';
+    tooltip += '<br/>';
     
     return tooltip;
   },
