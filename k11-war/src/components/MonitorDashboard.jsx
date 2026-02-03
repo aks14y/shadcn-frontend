@@ -4,6 +4,11 @@ import HeaderCheckboxDropdown from "../components/HeaderChechboxDropdown";
 import { cn } from "../design-system/utils/utils";
 import { SimpleLineChart } from "./SimpleLineChart";
 import { POWER_SERIES, VOLTAGE_SERIES } from "../utils/chartUtils";
+import DERListCard from "./DERListCard";
+import DERItemRow from "./DERItemRow";
+import DERHeaderRow from "./DERHeaderRow";
+import WallboxIcon from "./icons/WallboxIcon";
+import SunnyBoyIcon from "./icons/SunnyBoyIcon";
 
 const IconCircle = ({ children }) => (
   <span className="
@@ -229,7 +234,7 @@ const EmptyChart = ({ legend, className, series, xLabel, yLabel }) => {
 
 
 const SectionCard = ({ title, rightContent, children, onExpand }) => (
-  <Card className="w-full h-full px:0 py:0 overflow-hidden rounded-xl
+  <Card className="w-full h-full px:0 py:0 overflow-visible rounded-xl
                   shadow-[0_1px_2px_rgba(16,24,40,0.04),0_4px_8px_rgba(16,24,40,0.08)]">
     <div className="px-2 py-1 h-full flex flex-col min-w-0">
       <div className="flex items-start justify-between gap-2 mb-2 min-w-0 shrink-0">
@@ -257,7 +262,7 @@ const SectionCard = ({ title, rightContent, children, onExpand }) => (
           )}
         </div>
       </div>
-      <div className="flex-1 min-w-0 overflow-hidden">
+      <div className="flex-1 min-w-0 relative overflow-visible">
         {children}
       </div>
     </div>
@@ -745,7 +750,7 @@ const ExpandedChartDialog = ({
           </div>
         </DialogHeader>
         <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-          <div className="flex-1 w-full border border-gray-200 rounded bg-white p-4 min-h-0 flex flex-col" style={{ minHeight: 0 }}>
+          <div className="flex-1 w-full border border-gray-200 rounded bg-white p-4 min-h-0 flex flex-col">
             <div className="w-full h-full min-w-0 min-h-0 overflow-hidden">
               <SimpleLineChart series={series} zoom={zoom} xLabel={xLabel} yLabel={yLabel} className="w-full h-full" />
             </div>
@@ -798,6 +803,7 @@ const MonitorDashboard = ({ onNavigateToInsights }) => {
             title="Site Details"
             rightContent={
               <Button
+                onClick={onNavigateToInsights}
                 variant="outline"
                 size="sm"
                 className="text-sm px-2 py-1 rounded-full font-medium border-[#155eef] bg-[#155eef] text-white"
@@ -896,7 +902,6 @@ const MonitorDashboard = ({ onNavigateToInsights }) => {
                   { label: "Phase C", color: "#3b82f6" },
                 ]}
                 series={POWER_SERIES}
-                xLabel="Time"
                 yLabel="Power (kW)"
               />
             </SectionCard>
@@ -924,7 +929,6 @@ const MonitorDashboard = ({ onNavigateToInsights }) => {
                   { label: "Voltage (CN)", color: "#3b82f6" },
                 ]}
                 series={VOLTAGE_SERIES}
-                xLabel="Time"
                 yLabel="Voltage (V)"
               />
             </SectionCard>
@@ -977,16 +981,35 @@ const MonitorDashboard = ({ onNavigateToInsights }) => {
 
         {/* DERs summary row */}
         <SectionCard
-          title="DER's – (0)"
-          rightContent={
-            <div className="flex items-center gap-20 text-sm text-gray-700 font-medium">
-              <span className="font-bold whitespace-nowrap">Active Controls</span>
-              <span className="font-bold whitespace-nowrap">Site Default</span>
-            </div>
-          }
+          title="DER's – (2)"
         >
-          {/* Empty body – header-only card */}
-          <div className="h-6" />
+          <DERListCard>
+
+            <DERHeaderRow />
+            <DERItemRow
+              icon={<WallboxIcon className="w-5 h-5 text-gray-700"/>}
+              name="Wallbox"
+              status="Disconnected"
+              statusColor="red"
+              powerLeft="10.996 kW"
+              powerRight="0 kW"
+              flowText="Consuming"
+              controlType="Load Limiting"
+              siteDefault="70 kW"
+            />
+
+            <DERItemRow
+              icon={<SunnyBoyIcon className="w-5 h-5 text-gray-700"/>}
+              name="SunnyBoy"
+              status="Connected"
+              statusColor="green"
+              powerLeft="0 kW"
+              powerRight="6 kW"
+              controlType="Gen Limiting"
+              siteDefault="--"
+            />
+
+          </DERListCard>
         </SectionCard>
 
 
