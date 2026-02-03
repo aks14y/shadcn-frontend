@@ -95,11 +95,12 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className, s
       data: serie.data.map((p) => p.y),
       smooth: 0.3,
       symbol: "circle",
-      symbolSize: 5,
+      symbolSize: 4,
+      showSymbol: false,
       itemStyle: {
         color: serie.color,
         borderColor: serie.color,
-        borderWidth: 2,
+        borderWidth: 1.5,
       },
       lineStyle: {
         color: serie.color,
@@ -109,6 +110,12 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className, s
       areaStyle: {
         color: serie.color,
         opacity: 0.08,
+      },
+      emphasis: {
+        symbolSize: 6,
+        itemStyle: {
+          borderWidth: 2,
+        },
       },
     })),
 tooltip: {
