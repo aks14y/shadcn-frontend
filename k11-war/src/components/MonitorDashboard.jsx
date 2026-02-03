@@ -234,7 +234,7 @@ const EmptyChart = ({ legend, className, series, xLabel, yLabel }) => {
 
 
 const SectionCard = ({ title, rightContent, children, onExpand }) => (
-  <Card className="w-full h-full px:0 py:0 overflow-hidden rounded-xl
+  <Card className="w-full h-full px:0 py:0 overflow-visible rounded-xl
                   shadow-[0_1px_2px_rgba(16,24,40,0.04),0_4px_8px_rgba(16,24,40,0.08)]">
     <div className="px-2 py-1 h-full flex flex-col min-w-0">
       <div className="flex items-start justify-between gap-2 mb-2 min-w-0 shrink-0">
@@ -262,7 +262,7 @@ const SectionCard = ({ title, rightContent, children, onExpand }) => (
           )}
         </div>
       </div>
-      <div className="flex-1 min-w-0 overflow-hidden">
+      <div className="flex-1 min-w-0 relative overflow-visible">
         {children}
       </div>
     </div>
@@ -750,7 +750,7 @@ const ExpandedChartDialog = ({
           </div>
         </DialogHeader>
         <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-          <div className="flex-1 w-full border border-gray-200 rounded bg-white p-4 min-h-0 flex flex-col" style={{ minHeight: 0 }}>
+          <div className="flex-1 w-full border border-gray-200 rounded bg-white p-4 min-h-0 flex flex-col">
             <div className="w-full h-full min-w-0 min-h-0 overflow-hidden">
               <SimpleLineChart series={series} zoom={zoom} xLabel={xLabel} yLabel={yLabel} className="w-full h-full" />
             </div>
@@ -902,7 +902,6 @@ const MonitorDashboard = ({ onNavigateToInsights }) => {
                   { label: "Phase C", color: "#3b82f6" },
                 ]}
                 series={POWER_SERIES}
-                xLabel="Time"
                 yLabel="Power (kW)"
               />
             </SectionCard>
@@ -930,7 +929,6 @@ const MonitorDashboard = ({ onNavigateToInsights }) => {
                   { label: "Voltage (CN)", color: "#3b82f6" },
                 ]}
                 series={VOLTAGE_SERIES}
-                xLabel="Time"
                 yLabel="Voltage (V)"
               />
             </SectionCard>

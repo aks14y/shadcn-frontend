@@ -17,12 +17,4 @@ const DERHeaderRow = () => (
   </div>
 );
 
-// const DERHeaderRow = () => (
-//   <div className="hidden sm:flex items-center gap-4 px-4 text-sm font-medium text-gray-700">
-//     <div className="w-[420px]" />
-//     <div className="w-[320px] font-bold text-center">Active Controls</div>
-//     <div className="w-[160px] font-bold text-right">Site Default</div>
-//   </div>
-// );
-
 export default DERHeaderRow;

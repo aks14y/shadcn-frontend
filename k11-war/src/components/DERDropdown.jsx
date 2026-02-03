@@ -9,35 +9,14 @@ const ACTIONS = [
 
 const DERDropdown = () => {
   const [open, setOpen] = React.useState(false);
-  const [pos, setPos] = React.useState({ top: 0, left: 0 });
-
-  const btnRef = React.useRef(null);
-  const menuRef = React.useRef(null);
-
-  const updatePosition = React.useCallback(() => {
-    if (!btnRef.current) return;
-
-    const rect = btnRef.current.getBoundingClientRect();
-
-    setPos({
-      top: rect.bottom + 6,
-      left: rect.right - 160, // align dropdown right
-    });
-  }, []);
-
-  const toggle = () => {
-    updatePosition();
-    setOpen((v) => !v);
-  };
+  const containerRef = React.useRef(null);
 
   // Close on outside click
   React.useEffect(() => {
     const close = (e) => {
       if (
-        menuRef.current &&
-        !menuRef.current.contains(e.target) &&
-        btnRef.current &&
-        !btnRef.current.contains(e.target)
+        containerRef.current &&
+        !containerRef.current.contains(e.target)
       ) {
         setOpen(false);
       }
@@ -47,27 +26,11 @@ const DERDropdown = () => {
     return () => document.removeEventListener("mousedown", close);
   }, []);
 
-  // 🔑 Reposition on scroll + resize
-  React.useEffect(() => {
-    if (!open) return;
-
-    updatePosition();
-
-    window.addEventListener("scroll", updatePosition, true);
-    window.addEventListener("resize", updatePosition);
-
-    return () => {
-      window.removeEventListener("scroll", updatePosition, true);
-      window.removeEventListener("resize", updatePosition);
-    };
-  }, [open, updatePosition]);
-
   return (
-    <>
+    <div ref={containerRef} className="relative inline-flex">
       {/* Trigger */}
       <button
-        ref={btnRef}
-        onClick={toggle}
+        onClick={() => setOpen((v) => !v)}
         className="p-1 rounded hover:bg-gray-100 transition"
         aria-label="DER actions"
       >
@@ -85,18 +48,25 @@ const DERDropdown = () => {
       {/* Dropdown */}
       {open && (
         <div
-          ref={menuRef}
-          className="fixed z-[9999] w-40 rounded-lg border border-gray-200 bg-white shadow-lg"
-          style={{
-            top: pos.top,
-            left: pos.left,
-          }}
+          className="
+            absolute
+            right-0
+            top-full
+            mt-2
+            z-50
+            w-40
+            rounded-lg
+            border
+            border-gray-200
+            bg-white
+            shadow-lg
+          "
         >
-          <ul className="py-1 text-sm">
+          <ul className="max-h-48 overflow-y-auto py-1 text-sm">
             {ACTIONS.map((item) => (
               <li
                 key={item}
-                className="px-4 py-2 cursor-pointer hover:bg-gray-100 text-gray-700"
+                className="px-4 py-2 cursor-pointer text-gray-700 hover:bg-gray-100"
                 onClick={() => {
                   console.log(item);
                   setOpen(false);
@@ -108,7 +78,7 @@ const DERDropdown = () => {
           </ul>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
