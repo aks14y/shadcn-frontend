@@ -86,7 +86,7 @@ const ChartCard = ({ title, timeRangeButtons = [], legend = [], children, classN
               xLabel="Time"
               yLabel={
                 title === "DT Spare Capacity" 
-                  ? "Capacity (kW/kVA)" 
+                  ? "Capacity(kW/kVA)" 
                   : title === "Power" 
                   ? "Power (kW)" 
                   : title === "Voltage"

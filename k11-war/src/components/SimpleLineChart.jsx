@@ -30,10 +30,10 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className, s
 
   const option = {
     grid: {
-      left: "8%",
+      left: "10%",
       right: "8%",
       top: "8%",
-      bottom: "8%",
+      bottom: "13%",
       containLabel: false,
     },
     xAxis: {
