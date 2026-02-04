@@ -30,10 +30,10 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className, s
 
   const option = {
     grid: {
-      left: "10%",
+      left: yLabel ? "15%" : "10%",
       right: "8%",
-      top: "8%",
-      bottom: "13%",
+      top: "10%",
+      bottom: xLabel ? "18%" : "10%",
       containLabel: false,
     },
     xAxis: {
@@ -199,7 +199,7 @@ tooltip: {
     <div className={cn("w-full h-full min-w-0 relative", className)}>
       {yLabel && (
         <div
-          className="absolute -left-1 sm:-left-3 top-1/2 text-xs text-gray-600 whitespace-nowrap z-10 pb-3"
+          className="absolute -left-3 sm:-left-5 top-1/2 text-xs text-gray-600 whitespace-nowrap z-10 pb-3"
           style={{
             transform: "translateY(-50%) rotate(-90deg)",
           }}
