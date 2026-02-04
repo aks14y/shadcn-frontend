@@ -41,3 +41,4 @@ export {
   AccordionContent,
 } from "./Accordion";
 export { Calendar } from "./Calendar";
+export { default as DateRangePicker } from "./DateRangePicker";

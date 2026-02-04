@@ -84,7 +84,15 @@ const ChartCard = ({ title, timeRangeButtons = [], legend = [], children, classN
             <SimpleLineChart 
               series={series} 
               xLabel="Time"
-              yLabel={title === "DT Spare Capacity" ? "Capacity (kW/kVA)" : title === "Power" ? "Power (kW)" : "Voltage (V)"}
+              yLabel={
+                title === "DT Spare Capacity" 
+                  ? "Capacity(kW/kVA)" 
+                  : title === "Power" 
+                  ? "Power (kW)" 
+                  : title === "Voltage"
+                  ? "Voltage (V)"
+                  : ""
+              }
             />
           ) : (
             <div className="text-gray-400 text-sm flex items-center justify-center h-full">Chart will be rendered here</div>

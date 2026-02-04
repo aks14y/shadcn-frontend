@@ -73,3 +73,64 @@ export const VOLTAGE_INSIGHTS_SERIES = [
     data: generateDummySeries(48, 240, 0),
   },
 ];
+
+// Site View Series
+export const SITE_DYNAMIC_HOSTING_CAPACITY_SERIES = [
+  {
+    label: "Hosting capacity",
+    color: "#0040C1",
+    data: generateDummySeries(48, 500, 0),
+  },
+];
+
+export const SITE_EV_CHARGER_SERIES = [
+  {
+    label: "Charging state",
+    color: "#66BB6A",
+    data: generateDummySeries(48, 100, 0),
+  },
+];
+
+export const SITE_POWER_VMAX_SERIES = [
+  {
+    label: "Active Power",
+    color: "#0040C1",
+    data: generateDummySeries(48, 150, 0),
+  },
+  {
+    label: "Reactive Power",
+    color: "#66BB6A",
+    data: generateDummySeries(48, 100, 1),
+  },
+];
+
+export const SITE_VMAX_SERIES = [
+  {
+    label: "Voltage(LL)",
+    color: "#66BB6A",
+    data: generateDummySeries(48, 240, 0),
+  },
+];
+
+export const SITE_DISAGGREGATION_SERIES = [
+  {
+    label: "Consumption",
+    color: "#0040C1",
+    data: generateDummySeries(48, 100, 0),
+  },
+  {
+    label: "Generation",
+    color: "#60a5fa",
+    data: generateDummySeries(48, 80, 1),
+  },
+  {
+    label: "Import",
+    color: "#673AB7",
+    data: generateDummySeries(48, 60, 2),
+  },
+  {
+    label: "Export",
+    color: "#a78bfa",
+    data: generateDummySeries(48, 40, 3),
+  },
+];

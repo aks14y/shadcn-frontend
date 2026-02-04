@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, Calendar } from "../design-system/components";
+import DateRangePicker from "../design-system/components/DateRangePicker";
 import { cn } from "../design-system/utils/utils";
 import InfoCard from "./InfoCard";
 import ChartCard from "./ChartCard";
 import SitesTable from "./SitesTable";
 import { SimpleLineChart } from "./SimpleLineChart";
-import { CAPACITY_SERIES, VOLTAGE_INSIGHTS_SERIES } from "../utils/chartUtils";
+import { CAPACITY_SERIES, VOLTAGE_INSIGHTS_SERIES, SITE_DYNAMIC_HOSTING_CAPACITY_SERIES, SITE_EV_CHARGER_SERIES, SITE_POWER_VMAX_SERIES, SITE_VMAX_SERIES, SITE_DISAGGREGATION_SERIES } from "../utils/chartUtils";
+import { set } from "date-fns";
 
 const TimeRangeTabs = ({ options }) => {
   const [active, setActive] = React.useState(options[0]?.value || "");
@@ -38,28 +40,12 @@ const ExpandedChartDialog = ({
   series,
   xLabel,
   yLabel,
-  chartDate,
-  onDateChange,
+  startDate,
+  endDate,
+  onStartDateChange,
+  onEndDateChange,
 }) => {
   const [zoom, setZoom] = React.useState(1);
-  const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
-  const calendarRef = React.useRef(null);
-  const popoverRef = React.useRef(null);
-
-  React.useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        popoverRef.current &&
-        !popoverRef.current.contains(event.target) &&
-        calendarRef.current &&
-        !calendarRef.current.contains(event.target)
-      ) {
-        setIsCalendarOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const handleZoomIn = () => {
     setZoom((prev) => Math.min(prev + 0.5, 4));
@@ -74,23 +60,29 @@ const ExpandedChartDialog = ({
   };
 
   const handlePrevDay = () => {
-    if (chartDate && onDateChange) {
-      const newDate = new Date(chartDate);
-      newDate.setDate(newDate.getDate() - 1);
-      onDateChange(newDate);
+    if (startDate && onStartDateChange && onEndDateChange) {
+      const newStartDate = new Date(startDate);
+      newStartDate.setDate(newStartDate.getDate() - 1);
+      const newEndDate = new Date(endDate);
+      newEndDate.setDate(newEndDate.getDate() - 1);
+      onStartDateChange(newStartDate);
+      onEndDateChange(newEndDate);
     }
   };
 
   const handleNextDay = () => {
-    if (chartDate && onDateChange) {
-      const newDate = new Date(chartDate);
-      newDate.setDate(newDate.getDate() + 1);
-      onDateChange(newDate);
+    if (startDate && onStartDateChange && onEndDateChange) {
+      const newStartDate = new Date(startDate);
+      newStartDate.setDate(newStartDate.getDate() + 1);
+      const newEndDate = new Date(endDate);
+      newEndDate.setDate(newEndDate.getDate() + 1);
+      onStartDateChange(newStartDate);
+      onEndDateChange(newEndDate);
     }
   };
 
-  const formatMonthDay = (date) => {
-    if (!date) return "Jan 22";
+  const formatMonthDayRange = () => {
+    if (!startDate || !endDate) return "Select range";
     const monthNames = [
       "Jan",
       "Feb",
@@ -105,15 +97,9 @@ const ExpandedChartDialog = ({
       "Nov",
       "Dec",
     ];
-    return `${monthNames[date.getMonth()]} ${date.getDate()}`;
-  };
-
-  const formatDate = (date) => {
-    if (!date) return "22/01/2026";
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+    const startStr = `${monthNames[startDate.getMonth()]} ${startDate.getDate()}`;
+    const endStr = `${monthNames[endDate.getMonth()]} ${endDate.getDate()}`;
+    return `${startStr} - ${endStr}`;
   };
 
   const handleDownload = () => {
@@ -133,15 +119,16 @@ const ExpandedChartDialog = ({
       <DialogContent className="max-w-7xl w-[95vw] h-[90vh] max-h-[90vh] flex flex-col p-4">
         <DialogHeader className="pb-3 flex-shrink-0  pr-12">
           <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between w-full">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-3">
               <DialogTitle className="text-2xl font-semibold">{title}</DialogTitle>
-              <div className="flex items-center gap-4 flex-shrink-0 overflow-x-auto">
+              <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-start sm:justify-end">
+                
                 {/* Date Navigation */}
-                {chartDate && onDateChange && (
+                {startDate && endDate && onStartDateChange && onEndDateChange && (
                   <div className="flex items-center gap-2">
                     <button
                       onClick={handlePrevDay}
-                      className="p-1.5 rounded-md hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200"
+                      className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                       aria-label="Previous day"
                     >
                       <svg
@@ -156,12 +143,12 @@ const ExpandedChartDialog = ({
                         <path d="M15 19l-7-7 7-7"></path>
                       </svg>
                     </button>
-                    <span className="text-sm font-medium text-gray-700 min-w-[60px] text-center">
-                      {formatMonthDay(chartDate)}
+                    <span className="text-sm font-medium text-gray-700 min-w-max text-center">
+                      {formatMonthDayRange()}
                     </span>
                     <button
                       onClick={handleNextDay}
-                      className="p-1.5 rounded-md hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200"
+                      className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                       aria-label="Next day"
                     >
                       <svg
@@ -180,57 +167,28 @@ const ExpandedChartDialog = ({
                 )}
 
                 {/* Time Range Tabs */}
-                {timeRangeOptions && <TimeRangeTabs options={timeRangeOptions} />}
+                {timeRangeOptions && (
+                  <div className="max-w-full overflow-x-auto">
+                    <TimeRangeTabs options={timeRangeOptions} />
+                  </div>
+                )}
 
                 {/* Utility Icons */}
                 <div className="flex items-center gap-2">
-                  {/* Calendar Icon */}
-                  {chartDate && onDateChange && (
-                    <div className="relative" ref={calendarRef}>
-                      <button
-                        onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-                        className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
-                        aria-label="Pick a date"
-                        title="Pick a date"
-                      >
-                        <svg
-                          className="w-5 h-5 text-gray-600 hover:text-gray-800 transition-colors"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                          <line x1="16" y1="2" x2="16" y2="6"></line>
-                          <line x1="8" y1="2" x2="8" y2="6"></line>
-                          <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                      </button>
-                      {isCalendarOpen && (
-                        <div
-                          ref={popoverRef}
-                          className="absolute right-0 top-full mt-2 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-3"
-                        >
-                          <Calendar
-                            selected={chartDate}
-                            onSelect={(selectedDate) => {
-                              if (selectedDate) {
-                                onDateChange(selectedDate);
-                                setIsCalendarOpen(false);
-                              }
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
+                  {/* Date Range Picker */}
+                  {startDate && endDate && onStartDateChange && onEndDateChange && (
+                    <DateRangePicker
+                      startDate={startDate}
+                      endDate={endDate}
+                      onStartDateChange={onStartDateChange}
+                      onEndDateChange={onEndDateChange}
+                    />
                   )}
 
                   {/* Refresh Icon */}
                   <button
                     onClick={handleRefresh}
-                    className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
+                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                     aria-label="Refresh"
                     title="Refresh"
                   >
@@ -250,7 +208,7 @@ const ExpandedChartDialog = ({
                   {/* Download Icon */}
                   <button
                     onClick={handleDownload}
-                    className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
+                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                     aria-label="Download"
                     title="Download"
                   >
@@ -270,7 +228,7 @@ const ExpandedChartDialog = ({
                   {/* Export Icon */}
                   <button
                     onClick={handleExport}
-                    className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
+                    className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                     aria-label="Export"
                     title="Export"
                   >
@@ -291,10 +249,10 @@ const ExpandedChartDialog = ({
             </div>
             {/* Zoom Controls - separate row */}
             <div className="flex items-center justify-end w-full">
-              <div className="flex items-center gap-1 border border-gray-300 rounded-md p-0.5 bg-white shadow-sm">
+              <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-1 bg-gray-50 shadow-sm">
                 <button
                   onClick={handleZoomIn}
-                  className="p-1.5 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
+                  className="p-1.5 rounded-md bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                   aria-label="Zoom in"
                   title="Zoom in"
                 >
@@ -312,7 +270,7 @@ const ExpandedChartDialog = ({
                 </button>
                 <button
                   onClick={handleReset}
-                  className="p-1.5 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
+                  className="p-1.5 rounded-md bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                   aria-label="Reset zoom"
                   title="Reset zoom"
                 >
@@ -330,7 +288,7 @@ const ExpandedChartDialog = ({
                 </button>
                 <button
                   onClick={handleZoomOut}
-                  className="p-1.5 hover:bg-gray-100 active:bg-gray-200 rounded-md transition-colors duration-200"
+                  className="p-1.5 rounded-md bg-white text-gray-600 shadow-sm hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155eef]/30"
                   aria-label="Zoom out"
                   title="Zoom out"
                 >
@@ -358,6 +316,8 @@ const ExpandedChartDialog = ({
                 zoom={zoom}
                 xLabel={xLabel}
                 yLabel={yLabel}
+                startDate={startDate}
+                endDate={endDate}
                 className="w-full h-full"
               />
             </div>
@@ -375,6 +335,10 @@ const ExpandedChartDialog = ({
                         ? "bg-green-500"
                         : item.color === "#673AB7"
                         ? "bg-purple-600"
+                        : item.color === "#60a5fa"
+                        ? "bg-blue-400"
+                        : item.color === "#a78bfa"
+                        ? "bg-purple-400"
                         : "bg-gray-500"
                     )}
                   />
@@ -391,16 +355,47 @@ const ExpandedChartDialog = ({
 
 const InsightsDashboard = () => {
   const [selectedView, setSelectedView] = useState("DT");
+  
+  // DT View States
   const [capacityExpanded, setCapacityExpanded] = useState(false);
   const [voltageExpanded, setVoltageExpanded] = useState(false);
-  const [capacityDate, setCapacityDate] = useState(new Date("2026-01-22"));
-  const [voltageDate, setVoltageDate] = useState(new Date("2026-01-22"));
-
+  const [capacityStartDate, setCapacityStartDate] = useState(new Date("2026-01-15"));
+  const [capacityEndDate, setCapacityEndDate] = useState(new Date("2026-01-22"));
+  const [voltageStartDate, setVoltageStartDate] = useState(new Date("2026-01-15"));
+  const [voltageEndDate, setVoltageEndDate] = useState(new Date("2026-01-22"));
+  
+  // Site View States
+  const [siteDynamicHostingCapacityExpanded, setSiteDynamicHostingCapacityExpanded] = useState(false);
+  const [siteEVChargerExpanded, setSiteEVChargerExpanded] = useState(false);
+  const [sitePowerVmax, setSitePowerVmax] = useState(false);
+  const [siteVmax, setSiteVmax] = useState(false);
+  const [siteDisaggregation, setSiteDisaggregation] = useState(false);
+  
+  const [siteDynamicHostingCapacityStartDate, setSiteDynamicHostingCapacityStartDate] = useState(new Date("2026-01-15"));
+  const [siteDynamicHostingCapacityEndDate, setSiteDynamicHostingCapacityEndDate] = useState(new Date("2026-01-22"));
+  const [siteEVChargerStartDate, setSiteEVChargerStartDate] = useState(new Date("2026-01-15"));
+  const [siteEVChargerEndDate, setSiteEVChargerEndDate] = useState(new Date("2026-01-22"));
+  const [sitePowerVmaxStartDate, setSitePowerVmaxStartDate] = useState(new Date("2026-01-15"));
+  const [sitePowerVmaxEndDate, setSitePowerVmaxEndDate] = useState(new Date("2026-01-22"));
+  const [siteVmaxStartDate, setSiteVmaxStartDate] = useState(new Date("2026-01-15"));
+  const [siteVmaxEndDate, setSiteVmaxEndDate] = useState(new Date("2026-01-22"));
+  const [siteDisaggregationStartDate, setSiteDisaggregationStartDate] = useState(new Date("2026-01-15"));
+  const [siteDisaggregationEndDate, setSiteDisaggregationEndDate] = useState(new Date("2026-01-22"));
+  
+  
   const dtInfo = {
     name: "DT-001",
     capacity: "500 kVA",
     location: "San Francisco, CA",
   };
+
+  const siteInfo ={
+    name: "Site Alpha",
+    siteId: "SITE-001",
+    capacity: "500 kW",
+    location: "San Francisco, CA",
+    type: "Solar PV",
+  }
 
   const sitesTableColumns = [
     { header: "Site Name", accessor: "siteName" },
@@ -517,7 +512,10 @@ const InsightsDashboard = () => {
                 DT
               </button>
               <button
-                onClick={() => setSelectedView("Site")}
+                onClick={() => {
+                  // console.log("Changing to Site");
+                  setSelectedView("Site");
+                }}
                 className={cn(
                   "px-6 py-2 text-sm font-medium transition-colors first:rounded-l last:rounded-r whitespace-nowrap",
                   selectedView === "Site"
@@ -532,129 +530,419 @@ const InsightsDashboard = () => {
           </div>
         </div>
 
-        {/* Info Cards Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-          <InfoCard
-            title="DT Name"
-            value={dtInfo.name}
-            className={""}
-            icon={
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-              </svg>
-            }
-            showSwitchButton={true}
-            onSwitchClick={() => console.log("Switch DT clicked")}
-          />
-          <InfoCard
-            title="Capacity"
-            value={dtInfo.capacity}
-            icon={
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
-              </svg>
-            }
-          />
-          <InfoCard
-            title="Location"
-            value={dtInfo.location}
-            icon={
-              <svg
-                className="w-5 h-5"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"></path>
-              </svg>
-            }
-          />
-        </div>
+        {/* Conditional Rendering based on Selected View */}
+        {selectedView === "DT" && (
+          <>
+            {/* Info Cards Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+              <InfoCard
+                title="DT Name"
+                value={dtInfo.name}
+                className={""}
+                icon={
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                  </svg>
+                }
+                showSwitchButton={true}
+                onSwitchClick={() => console.log("Switch DT clicked")}
+              />
+              <InfoCard
+                title="Capacity"
+                value={dtInfo.capacity}
+                icon={
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                  </svg>
+                }
+              />
+              <InfoCard
+                title="Location"
+                value={dtInfo.location}
+                icon={
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"></path>
+                  </svg>
+                }
+              />
+            </div>
 
-        {/* Charts Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <ChartCard
-            title="DT Spare Capacity"
-            timeRangeButtons={[
-              { label: "Last 24 Hours", value: "day" },
-              { label: "Last Week", value: "week" },
-              { label: "Last Month", value: "month" },
-            ]}
-            legend={[
-              { label: "kW", color: "#0040C1" },
-              { label: "kVA", color: "#66BB6A" },
-            ]}
-            onExpand={() => setCapacityExpanded(true)}
-            series={CAPACITY_SERIES}
-          />
-          <ChartCard
-            title="Voltage"
-            timeRangeButtons={[
-              { label: "Last 24 Hours", value: "day" },
-              { label: "Last Week", value: "week" },
-              { label: "Last Month", value: "month" },
-            ]}
-            legend={[{ label: "Voltage (Vmax Average)", color: "#673AB7" }]}
-            onExpand={() => setVoltageExpanded(true)}
-            series={VOLTAGE_INSIGHTS_SERIES}
-          />
-        </div>
+            {/* Charts Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <ChartCard
+                title="DT Spare Capacity"
+                timeRangeButtons={[
+                  { label: "Last 24 Hours", value: "day" },
+                  { label: "Last Week", value: "week" },
+                  { label: "Last Month", value: "month" },
+                ]}
+                legend={[
+                  { label: "kW", color: "#0040C1" },
+                  { label: "kVA", color: "#66BB6A" },
+                ]}
+                onExpand={() => setCapacityExpanded(true)}
+                series={CAPACITY_SERIES}
+              />
+              <ChartCard
+                title="Voltage"
+                timeRangeButtons={[
+                  { label: "Last 24 Hours", value: "day" },
+                  { label: "Last Week", value: "week" },
+                  { label: "Last Month", value: "month" },
+                ]}
+                legend={[{ label: "Voltage (Vmax Average)", color: "#673AB7" }]}
+                onExpand={() => setVoltageExpanded(true)}
+                series={VOLTAGE_INSIGHTS_SERIES}
+              />
+            </div>
 
-        {/* Expanded Chart Dialogs */}
-        <ExpandedChartDialog
-          open={capacityExpanded}
-          onOpenChange={setCapacityExpanded}
-          title="DT Spare Capacity"
-          timeRangeOptions={[
-            { label: "Last 24 Hours", value: "day" },
-            { label: "Last Week", value: "week" },
-            { label: "Last Month", value: "month" },
-          ]}
-          legend={[
-            { label: "kW", color: "#0040C1" },
-            { label: "kVA", color: "#66BB6A" },
-          ]}
-          series={CAPACITY_SERIES}
-          xLabel="Time"
-          yLabel="Capacity (kW/kVA)"
-          chartDate={capacityDate}
-          onDateChange={setCapacityDate}
-        />
+            {/* Expanded Chart Dialogs */}
+            <ExpandedChartDialog
+              open={capacityExpanded}
+              onOpenChange={setCapacityExpanded}
+              title="DT Spare Capacity"
+              timeRangeOptions={[
+                { label: "Last 24 Hours", value: "day" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+              ]}
+              legend={[
+                { label: "kW", color: "#0040C1" },
+                { label: "kVA", color: "#66BB6A" },
+              ]}
+              series={CAPACITY_SERIES}
+              xLabel="Time"
+              yLabel="Capacity (kW/kVA)"
+              startDate={capacityStartDate}
+              endDate={capacityEndDate}
+              onStartDateChange={setCapacityStartDate}
+              onEndDateChange={setCapacityEndDate}
+            />
 
-        <ExpandedChartDialog
-          open={voltageExpanded}
-          onOpenChange={setVoltageExpanded}
-          title="Voltage"
-          timeRangeOptions={[
-            { label: "Last 24 Hours", value: "day" },
-            { label: "Last Week", value: "week" },
-            { label: "Last Month", value: "month" },
-          ]}
-          legend={[{ label: "Voltage (Vmax Average)", color: "#673AB7" }]}
-          series={VOLTAGE_INSIGHTS_SERIES}
-          xLabel="Time"
-          yLabel="Voltage (V)"
-          chartDate={voltageDate}
-          onDateChange={setVoltageDate}
-        />
+            <ExpandedChartDialog
+              open={voltageExpanded}
+              onOpenChange={setVoltageExpanded}
+              title="Voltage"
+              timeRangeOptions={[
+                { label: "Last 24 Hours", value: "day" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+              ]}
+              legend={[{ label: "Voltage (Vmax Average)", color: "#673AB7" }]}
+              series={VOLTAGE_INSIGHTS_SERIES}
+              xLabel="Time"
+              yLabel="Voltage (V)"
+              startDate={voltageStartDate}
+              endDate={voltageEndDate}
+              onStartDateChange={setVoltageStartDate}
+              onEndDateChange={setVoltageEndDate}
+            />
 
-        {/* Sites Table */}
-        <SitesTable title="Sites List" columns={sitesTableColumns} data={sitesTableData} />
+            {/* Sites Table */}
+            <SitesTable title="Sites List" columns={sitesTableColumns} data={sitesTableData} />
+          </>
+        )}
+
+
+        {/* Conditional Rendering for Site View */}
+        {selectedView === "Site" && (
+          <>
+           {/* Info Cards Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              <InfoCard
+                title="Site Name"
+                value={dtInfo.name}
+                className={""}
+                icon={
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                  </svg>
+                }
+                showSwitchButton={true}
+                onSwitchClick={() => console.log("Switch DT clicked")}
+              />
+           
+
+               <InfoCard
+                title="Site ID"
+                value={siteInfo.siteId}
+                icon={
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                  </svg>
+                }
+              />
+          
+              <InfoCard
+                title="Type"
+                value={siteInfo.type}
+                icon={
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"></path>
+                  </svg>
+                }
+              />
+                <InfoCard
+                title="Location"
+                value={siteInfo.location}
+                icon={
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                  </svg>
+                }
+              />
+            </div>
+
+             {/* Charts Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <ChartCard
+                title="Dynamic Hosting Capacity"
+                timeRangeButtons={[
+                  { label: "Last 24 Hours", value: "day" },
+                  { label: "Last Week", value: "week" },
+                  { label: "Last Month", value: "month" },
+                ]}
+                legend={[
+                  { label: "Hosting capacity", color: "#0040C1" },
+                  // { label: "kVA", color: "#66BB6A" },
+                ]}
+                onExpand={() => setSiteDynamicHostingCapacityExpanded(true)}
+                series={SITE_DYNAMIC_HOSTING_CAPACITY_SERIES}
+              />
+              <ChartCard
+                title="EV charger"
+                timeRangeButtons={[
+                  { label: "Last 24 Hours", value: "day" },
+                  { label: "Last Week", value: "week" },
+                  { label: "Last Month", value: "month" },
+                ]}
+                legend={[{ label: "Charging state ", color: "#66BB6A" }]}
+                onExpand={() => setSiteEVChargerExpanded(true)}
+                series={SITE_EV_CHARGER_SERIES}
+              />
+              <ChartCard
+                title="Power @ Vmax"
+                timeRangeButtons={[
+                  { label: "Last 24 Hours", value: "day" },
+                  { label: "Last Week", value: "week" },
+                  { label: "Last Month", value: "month" },
+                ]}
+                legend={[
+                  { label: "Active Power", color: "#0040C1" },
+                  { label: "Reactive Power", color: "#66BB6A" },
+                ]}
+                onExpand={() => setSitePowerVmax(true)}
+                series={SITE_POWER_VMAX_SERIES}
+              />
+              <ChartCard
+                title="Vmax"
+                timeRangeButtons={[
+                  { label: "Last 24 Hours", value: "day" },
+                  { label: "Last Week", value: "week" },
+                  { label: "Last Month", value: "month" },
+                ]}
+                legend={[
+                  
+                  { label: "Voltage(LL)", color: "#66BB6A" },
+                ]}
+                onExpand={() => setSiteVmax(true)}
+                series={SITE_VMAX_SERIES}
+              />
+              
+            </div>
+             <ChartCard
+                title="Disaggregation Summary"
+                timeRangeButtons={[
+                  { label: "Last 24 Hours", value: "day" },
+                  { label: "Last Week", value: "week" },
+                  { label: "Last Month", value: "month" },
+                ]}
+                legend={[
+                  { label: "Consumption", color: "#0040C1" },
+                  { label: "Generation", color: "#60a5fa" },
+                  { label: "Import", color: "#673AB7" },
+                  { label: "Export", color: "#a78bfa" },
+                ]}
+                onExpand={() => setSiteDisaggregation(true)}
+                series={SITE_DISAGGREGATION_SERIES}
+              />
+
+
+             
+               
+              
+            {/* Expanded Chart Dialogs for Site View */}
+
+            {/* expanded char for dynamic hosting capacity */}
+            <ExpandedChartDialog
+              open={siteDynamicHostingCapacityExpanded}
+              onOpenChange={setSiteDynamicHostingCapacityExpanded}
+              title="Dynamic Hosting Capacity"
+              timeRangeOptions={[
+                { label: "Last 24 Hours", value: "day" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+              ]}
+              legend={[
+                { label: "Hosting capacity", color: "#0040C1" },
+              ]}
+              series={SITE_DYNAMIC_HOSTING_CAPACITY_SERIES}
+              xLabel="Time"
+              yLabel="Hosting Capacity (kW)"
+              startDate={siteDynamicHostingCapacityStartDate}
+              endDate={siteDynamicHostingCapacityEndDate}
+              onStartDateChange={setSiteDynamicHostingCapacityStartDate}
+              onEndDateChange={setSiteDynamicHostingCapacityEndDate}
+            />
+
+              {/* expanded chart for EV charger */}
+            <ExpandedChartDialog
+              open={siteEVChargerExpanded}
+              onOpenChange={setSiteEVChargerExpanded}
+              title="EV Charger"
+              timeRangeOptions={[
+                { label: "Last 24 Hours", value: "day" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+              ]}
+              legend={[{ label: "Charging state ", color: "#66BB6A" }]}
+              series={SITE_EV_CHARGER_SERIES}
+              xLabel="Time"
+              yLabel="Voltage (V)"
+              startDate={siteEVChargerStartDate}
+              endDate={siteEVChargerEndDate}
+              onStartDateChange={setSiteEVChargerStartDate}
+              onEndDateChange={setSiteEVChargerEndDate}
+            />
+
+            {/* Expandede chart for power @ Vmax */}
+              <ExpandedChartDialog
+              open={sitePowerVmax}
+              onOpenChange={setSitePowerVmax}
+              title="Power @ Vmax"
+              timeRangeOptions={[
+                { label: "Last 24 Hours", value: "day" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+              ]}
+              legend={[
+                { label: "Active Power", color: "#0040C1" },
+                { label: "Reactive Power", color: "#66BB6A" },
+              ]}
+              series={SITE_POWER_VMAX_SERIES}
+              startDate={sitePowerVmaxStartDate}
+              endDate={sitePowerVmaxEndDate}
+              onStartDateChange={setSitePowerVmaxStartDate}
+              onEndDateChange={setSitePowerVmaxEndDate}
+            />
+
+            {/* Expanded chart for Vmax */}
+              <ExpandedChartDialog
+              open={siteVmax}
+              onOpenChange={setSiteVmax}
+              title="Vmax"
+              timeRangeOptions={[
+                { label: "Last 24 Hours", value: "day" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+              ]}
+              legend={[
+              
+                { label: "Voltage(LL)", color: "#66BB6A" },
+              ]}
+              series={SITE_VMAX_SERIES}
+              xLabel="Time"
+              yLabel="Capacity (kW/kVA)"
+              startDate={siteVmaxStartDate}
+              endDate={siteVmaxEndDate}
+              onStartDateChange={setSiteVmaxStartDate}
+              onEndDateChange={setSiteVmaxEndDate}
+            />
+
+            {/* expanded chart for disaggregation summary */}
+              <ExpandedChartDialog
+              open={siteDisaggregation}
+              onOpenChange={setSiteDisaggregation}
+              title="Disaggregation Summary"
+              timeRangeOptions={[
+                { label: "Last 24 Hours", value: "day" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+              ]}
+              legend={[
+                { label: "Consumption", color: "#0040C1" },
+                { label: "Generation", color: "#60a5fa" },
+                { label: "Import", color: "#673AB7" },
+                { label: "Export", color: "#a78bfa" },
+              ]}
+              series={SITE_DISAGGREGATION_SERIES}
+              // xLabel="Time"
+              yLabel="Kwh"
+              startDate={siteDisaggregationStartDate}
+              endDate={siteDisaggregationEndDate}
+              onStartDateChange={setSiteDisaggregationStartDate}
+              onEndDateChange={setSiteDisaggregationEndDate}
+            />
+
+          
+
+
+
+
+
+          </>
+
+          
+          
+        )}
       </div>
     </div>
   );

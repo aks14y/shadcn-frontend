@@ -2,7 +2,7 @@ import React from "react";
 import ReactECharts from "echarts-for-react";
 import { cn } from "../design-system/utils/utils";
 
-export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className }) => {
+export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className, startDate = undefined, endDate = undefined   }) => {
   const maxPoints = Math.max(...series.map((s) => s.data.length));
   const visiblePoints = Math.max(4, Math.floor(maxPoints / zoom));
 
@@ -22,13 +22,19 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className })
   const yAxisMin = Math.max(0, minY - yRange * 0.05); // Add padding below, but don't go below 0
   const yAxisMax = maxY + yRange * 0.05; // 5% padding above
 
+  // Create color map for tooltip
+  const colorMap = {};
+  truncatedSeries.forEach((serie) => {
+    colorMap[serie.label] = serie.color;
+  });
+
   const option = {
     grid: {
-      left: 56,
-      right: 24,
-      top: 24,
-      bottom: 56,
-      containLabel: true,
+      left: yLabel ? "15%" : "10%",
+      right: "8%",
+      top: "10%",
+      bottom: xLabel ? "18%" : "10%",
+      containLabel: false,
     },
     xAxis: {
       type: "category",
@@ -38,8 +44,8 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className })
       axisLine: {
         show: true,
         lineStyle: {
-          color: "#d1d5db",
-          width: 1,
+          color: "#374151",
+          width: 2.5,
         },
       },
       axisTick: {
@@ -49,7 +55,11 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className })
         show: false,
       },
       splitLine: {
-        show: false,
+        show: true,
+        lineStyle: {
+          color: "#f3f4f6",
+          type: "solid",
+        },
       },
     },
     yAxis: {
@@ -61,8 +71,8 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className })
       axisLine: {
         show: true,
         lineStyle: {
-          color: "#d1d5db",
-          width: 1,
+          color: "#374151",
+          width: 2.5,
         },
       },
       axisTick: {
@@ -72,37 +82,124 @@ export const SimpleLineChart = ({ series, zoom = 1, xLabel, yLabel, className })
         show: false,
       },
       splitLine: {
-        show: false,
+        show: true,
+        lineStyle: {
+          color: "#f3f4f6",
+          type: "solid",
+        },
       },
     },
     series: truncatedSeries.map((serie) => ({
       name: serie.label,
       type: "line",
       data: serie.data.map((p) => p.y),
-      smooth: false,
-      symbol: "none",
+      smooth: 0.3,
+      symbol: "circle",
+      symbolSize: 4,
+      showSymbol: false,
+      itemStyle: {
+        color: serie.color,
+        borderColor: serie.color,
+        borderWidth: 1.5,
+      },
       lineStyle: {
         color: serie.color,
-        width: 1.2,
+        width: 2.5,
+        type: "dotted",
       },
       areaStyle: {
-        opacity: 0,
+        color: serie.color,
+        opacity: 0.08,
+      },
+      emphasis: {
+        symbolSize: 6,
+        itemStyle: {
+          borderWidth: 2,
+        },
       },
     })),
-    tooltip: {
-      trigger: "axis",
-      axisPointer: {
-        type: "line",
-      },
+tooltip: {
+  trigger: "axis",
+  backgroundColor: "#ffffff",
+  borderColor: "#e5e7eb",
+  borderWidth: 1,
+  padding: 12,
+  extraCssText: 'box-shadow: 0 2px 8px rgba(0,0,0,0.1);',
+  textStyle: {
+    color: "#000000",
+    fontSize: 12,
+  },
+  axisPointer: {
+    type: "line",
+    lineStyle: {
+      color: "#d1d5db",
+      width: 1,
+      type: "dashed",
     },
-    animation: false,
+  },
+  formatter: (params) => {
+    if (!Array.isArray(params) || params.length === 0) return "";
+    
+    const dataIndex = params[0].dataIndex;
+    
+    // Calculate actual date based on startDate and endDate if provided
+    let dateStr;
+    if (startDate && endDate) {
+      const totalPoints = truncatedSeries[0]?.data.length || 1;
+      const startTime = new Date(startDate).getTime();
+      const endTime = new Date(endDate).getTime();
+      const timeRange = endTime - startTime;
+      const pointTime = startTime + (dataIndex / (totalPoints - 1)) * timeRange;
+      const dataDate = new Date(pointTime);
+      
+      dateStr = dataDate.toLocaleDateString('en-US', { 
+        day: 'numeric', 
+        month: 'short', 
+        year: 'numeric' 
+      }) + ', ' + dataDate.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: true 
+      });
+    } else {
+      // Fallback to index-based calculation
+      const now = new Date();
+      const dataDate = new Date(now.getTime() - (100 - dataIndex) * 15 * 60000);
+      dateStr = dataDate.toLocaleDateString('en-US', { 
+        day: 'numeric', 
+        month: 'short', 
+        year: 'numeric' 
+      }) + ', ' + dataDate.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: true 
+      });
+    }
+    
+    // Use Unicode circle character instead of HTML/CSS
+    let tooltip = dateStr + '<br/><br/>';
+    
+    params.forEach((item) => {
+      const seriesColor = truncatedSeries[item.seriesIndex]?.color || '#000';
+    // console.log(seriesColor);
+    // cant apply color for the dot due to CSP
+      tooltip += '<span class=>●</span> ' + item.seriesName + ': ' + item.value + '<br/>';
+    });
+    
+    tooltip += '<br/>';
+    
+    return tooltip;
+  },
+},
+    animation: true,
+    animationDuration: 800,
   };
 
   return (
     <div className={cn("w-full h-full min-w-0 relative", className)}>
       {yLabel && (
         <div
-          className="absolute -left-1 sm:-left-3 top-1/2 text-xs text-gray-600 whitespace-nowrap z-10 pb-3"
+          className="absolute -left-3 sm:-left-5 top-1/2 text-xs text-gray-600 whitespace-nowrap z-10 pb-3"
           style={{
             transform: "translateY(-50%) rotate(-90deg)",
           }}
